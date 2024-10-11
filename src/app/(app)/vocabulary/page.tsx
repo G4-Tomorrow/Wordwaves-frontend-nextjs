@@ -1,5 +1,11 @@
+import SearchBar from "@/app/(app)/vocabulary/searchbar";
+import MainContent from "@/app/(app)/vocabulary/maincontent";
+
 export default function Vocabulary() {
   return (
-    <div className="h-[90vh] flex justify-center items-center">Từ Vựng</div>
+    <div className="flex flex-col items-center">
+      <SearchBar />
+      <MainContent />
+    </div>
   );
 }

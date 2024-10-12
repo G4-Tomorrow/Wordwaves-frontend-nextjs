@@ -14,37 +14,56 @@ import {
 import { useRouter } from "next/navigation";
 import VocabularySetsList from "./vocabulary-setslist";
 import { useEffect, useState } from "react";
-import VocabularySet from "@/app/(app)/vocabulary/vocabulary-set";
+import VocabularySet, {
+  VocabularySetProps,
+} from "@/app/(app)/vocabulary/vocabulary-set";
 import vocabularyData from "./test-data";
 
-const TooltipProvider = dynamic(
-  () => import("@/components/ui/tooltip").then((mod) => mod.TooltipProvider),
-  { ssr: false }
-);
-const Tooltip = dynamic(
-  () => import("@/components/ui/tooltip").then((mod) => mod.Tooltip),
-  { ssr: false }
-);
-const TooltipTrigger = dynamic(
-  () => import("@/components/ui/tooltip").then((mod) => mod.TooltipTrigger),
-  { ssr: false }
-);
-const TooltipContent = dynamic(
-  () => import("@/components/ui/tooltip").then((mod) => mod.TooltipContent),
-  { ssr: false }
-);
+// const TooltipProvider = dynamic(
+//   () => import("@/components/ui/tooltip").then((mod) => mod.TooltipProvider),
+//   { ssr: false }
+// );
+// const Tooltip = dynamic(
+//   () => import("@/components/ui/tooltip").then((mod) => mod.Tooltip),
+//   { ssr: false }
+// );
+// const TooltipTrigger = dynamic(
+//   () => import("@/components/ui/tooltip").then((mod) => mod.TooltipTrigger),
+//   { ssr: false }
+// );
+// const TooltipContent = dynamic(
+//   () => import("@/components/ui/tooltip").then((mod) => mod.TooltipContent),
+//   { ssr: false }
+// );
 
 const MainContent: React.FC = () => {
   const [showAllCategories, setShowAllCategories] = useState(false);
+  const [pinnedFolders, setPinnedFolders] = useState<any>([]);
+  const [isSelectingPinnedFolder, setIsSelectingPinnedFolder] = useState(false);
   const router = useRouter();
 
   const handleShowAllCategories = () => {
     setShowAllCategories(!showAllCategories);
   };
 
-  useEffect(() => {
-    console.log("showAllCategories", showAllCategories);
-  }, [showAllCategories]);
+  const handleSelectPinnedFolderClick = () => {
+    setIsSelectingPinnedFolder(true);
+    setShowAllCategories(true);
+  };
+
+  const handleSelectPinnedFolder = (folder: any) => {
+    if (isSelectingPinnedFolder) {
+      // Chỉ thực hiện ghim nếu đang chọn thư mục để pin
+      setPinnedFolders([folder]);
+      setIsSelectingPinnedFolder(false); // Tắt chế độ chọn folder
+      setShowAllCategories(false); // Đóng danh mục
+    } else {
+      // Các hành động khác khi không phải là chọn folder để ghim
+      console.log("Thực hiện các hành động khác với thư mục:", folder);
+      // Ví dụ: nếu muốn người dùng xem chi tiết
+      // router.push(`/folder/${folder.id}`); // Điều hướng đến trang chi tiết thư mục
+    }
+  };
 
   return (
     <div className="mt-10 p-2 flex gap-8 !pr-0">
@@ -78,53 +97,74 @@ const MainContent: React.FC = () => {
         <div className="mt-6">
           <div className="flex items-center justify-between mb-3 text-[17px]">
             <h3 className="font-semibold">Thư mục đã ghim</h3>
-            <button className="bg-primary text-white p-2 rounded-xl focus:outline-none">
-              Chọn thư mục khác
+            <button
+              className="bg-primary text-white p-2 rounded-xl focus:outline-none"
+              onClick={handleSelectPinnedFolderClick}
+            >
+              {pinnedFolders.length > 0
+                ? "Chọn thư mục khác"
+                : "Chọn thư mục để ghim"}
             </button>
           </div>
-          <div className="flex flex-col justify-center gap-3 bg-white p-4 rounded-xl relative">
-            <div className="flex gap-3">
-              <Image
-                src="https://voca-land.sgp1.cdn.digitaloceanspaces.com/-1/1653745898655/630aba7dd711828c5f4dfc994ec966d95a0993a1d4a39c319e06c8ce6a2fcfcd.png"
-                width={100}
-                height={100}
-                alt="folder"
-                className="w-16 h-16 rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-1"
-              />
-              <div className="w-full flex flex-col justify-around items-start">
-                <p className="font-semibold">Cấp độ A1</p>
-                <div className="text-[11px] text-gray-500 flex gap-2 font-semibold">
-                  <div className="flex items-center text-[#0088E6] gap-1">
-                    <IconCircleCheckFilled width={19} height={19} />
-                    <p>0/768 đã học</p>
-                  </div>
-                  <div className="flex items-center text-primary gap-1">
-                    <IconClockFilled width={19} height={19} />
-                    <p>0 cần luyện tập</p>
+
+          {pinnedFolders.length > 0 ? (
+            pinnedFolders.map((folder: any, index: number) => (
+              <div className="flex flex-col gap-3 justify-center bg-white p-4 rounded-xl relative">
+                <div key={index} className="flex gap-3">
+                  <Image
+                    src={folder.thumbnail}
+                    width={100}
+                    height={100}
+                    alt="folder"
+                    className="w-16 h-16 rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-[5px]"
+                  />
+                  <div className="w-full flex flex-col justify-around items-start">
+                    <p className="font-semibold">{folder.progress}</p>
+                    <div className="text-xs text-gray-500 flex gap-2 font-semibold">
+                      <div className="flex items-center text-[#0088E6] gap-1">
+                        <IconCircleCheckFilled width={19} height={19} />
+                        <p className="mt-0.5">
+                          {folder.completed}/{folder.total} đã học
+                        </p>
+                      </div>
+                      <div className="flex items-center text-primary gap-1">
+                        <IconClockFilled width={19} height={19} />
+                        <p className="mt-0.5">
+                          {folder.timeLeft} cần luyện tập
+                        </p>
+                      </div>
+                      <button className="absolute top-5 right-5">
+                        <IconChevronRight width={21} height={21} />
+                      </button>
+                    </div>
                   </div>
                 </div>
+                {/* <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger> */}
+                <button
+                  className="bg-[#0088E6] w-full text-white px-4 py-2.5 flex justify-center gap-2 rounded-lg focus:outline-none shadow-[0px_1px_1px_rgba(221,_221,_221,_1),_0_3px_1px_rgba(204,_204,_204,_1)]"
+                  onClick={() => {
+                    console.log("học từ mới đi em");
+                  }}
+                >
+                  <IconPlant />
+                  Học từ mới
+                </button>
+                {/* </TooltipTrigger>
+                        <TooltipContent className="mb-2 bg-slate-800 text-white">
+                          <p>
+                            Học các từ mới, bao gồm cả những từ chưa hoàn thành
+                            100%
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider> */}
               </div>
-              <button className="absolute top-5 right-5">
-                <IconChevronRight width={21} height={21} />
-              </button>
-            </div>
-
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <button className="bg-[#0088E6] w-full text-white px-4 py-2.5 flex justify-center gap-2 rounded-lg focus:outline-none shadow-[0px_1px_1px_rgba(221,_221,_221,_1),_0_3px_1px_rgba(204,_204,_204,_1)]">
-                    <IconPlant />
-                    Học từ mới
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent className="mb-2 bg-slate-800 text-white">
-                  <p>
-                    Học các từ mới, bao gồm cả những từ chưa hoàn thành 100%
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+            ))
+          ) : (
+            <p>Chưa có thư mục nào được ghim.</p>
+          )}
         </div>
       </div>
 
@@ -171,19 +211,21 @@ const MainContent: React.FC = () => {
                 </p>
                 <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-6">
                   {category.vocabularies.map((vocab, vocabIndex) => (
-                    <VocabularySet
-                      key={vocabIndex}
-                      title={vocab.title}
-                      thumbnail={vocab.thumbnail}
-                      level={vocab.level}
-                      progress={vocab.progress}
-                      completed={vocab.completed}
-                      total={vocab.total}
-                      timeLeft={vocab.timeLeft}
-                      crown={vocab.crown}
-                      width={64}
-                      height={52}
-                    />
+                    <button onClick={() => handleSelectPinnedFolder(vocab)}>
+                      <VocabularySet
+                        key={vocab.title}
+                        title={vocab.title}
+                        thumbnail={vocab.thumbnail}
+                        level={vocab.level}
+                        progress={vocab.progress}
+                        completed={vocab.completed}
+                        total={vocab.total}
+                        timeLeft={vocab.timeLeft}
+                        crown={vocab.crown}
+                        width={64}
+                        height={52}
+                      />
+                    </button>
                   ))}
                 </div>
               </div>

@@ -1,7 +1,11 @@
-import { IconCircleCheckFilled, IconClockFilled } from "@tabler/icons-react";
+import {
+  IconCircleCheckFilled,
+  IconClockFilled,
+  IconCrown,
+} from "@tabler/icons-react";
 import Image from "next/image";
 
-interface VocabularySetProps {
+export interface VocabularySetProps {
   title: string;
   thumbnail: string;
   level: string;
@@ -58,7 +62,9 @@ const VocabularySet: React.FC<VocabularySetProps> = ({
       </div>
     </div>
     {crown && (
-      <span className="absolute top-2 right-2 text-yellow-500">👑</span>
+      <span className="absolute top-2 right-2 text-yellow-500">
+        <IconCrown />
+      </span>
     )}
   </div>
 );

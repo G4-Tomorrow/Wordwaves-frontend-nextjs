@@ -1,12 +1,13 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import { Button } from "@/components/ui/button";
+import http from '@/utils/http';
 
 export default function VerifyEmailPage() {
-    const [verificationStatus, setVerificationStatus] = useState<'loading' | 'success' | 'error'>('loading');
+    const [verificationStatus, setVerificationStatus] = useState<'loading' | 'success' | 'error' | 'alreadyVerified'>('loading');
     const searchParams = useSearchParams();
 
     useEffect(() => {
@@ -18,14 +19,25 @@ export default function VerifyEmailPage() {
             }
 
             try {
-                const response = await axios.get(`http://localhost:3000/verify-email?token=${token}`);
-                if (response.status === 200) {
+                const response = await http.post(
+                    `users/verify`,
+                    { token: token },
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+
+                if (response.data.code === 1000) {
                     setVerificationStatus('success');
+                } else if (response.data.code === 1001) { 
+                    setVerificationStatus('alreadyVerified');
                 } else {
                     setVerificationStatus('error');
                 }
             } catch (error) {
-                console.error('Email verification failed:', error);
+                console.error('Xác nhận email thất bại:', error);
                 setVerificationStatus('error');
             }
         };
@@ -36,21 +48,29 @@ export default function VerifyEmailPage() {
     const renderContent = () => {
         switch (verificationStatus) {
             case 'loading':
-                return <p>Verifying your email address...</p>;
+                return <p>Đang xác nhận địa chỉ email của bạn...</p>;
             case 'success':
                 return (
                     <>
-                        <h2 className="text-2xl font-bold mb-4">Email Verified Successfully!</h2>
-                        <p className="mb-4">Your email has been verified. You can now log in to your account.</p>
-                        <Button onClick={() => window.location.href = '/sign-in'}>Go to Sign In</Button>
+                        <h2 className="text-2xl font-bold mb-4">Xác Nhận Email Thành Công!</h2>
+                        <p className="mb-4">Email của bạn đã được xác nhận. Bạn có thể đăng nhập vào tài khoản của mình ngay bây giờ.</p>
+                        <Button onClick={() => window.location.href = '/sign-in'}>Đăng nhập</Button>
+                    </>
+                );
+            case 'alreadyVerified':
+                return (
+                    <>
+                        <h2 className="text-2xl font-bold mb-4">Email Đã Được Xác Nhận</h2>
+                        <p className="mb-4">Email của bạn đã được xác nhận trước đó. Bạn có thể đăng nhập vào tài khoản của mình.</p>
+                        <Button onClick={() => window.location.href = '/sign-in'}>Đăng nhập</Button>
                     </>
                 );
             case 'error':
                 return (
                     <>
-                        <h2 className="text-2xl font-bold mb-4">Email Verification Failed</h2>
-                        <p className="mb-4">We couldn't verify your email address. The verification link may have expired or is invalid.</p>
-                        <Button onClick={() => window.location.href = '/sign-up'}>Back to Sign Up</Button>
+                        <h2 className="text-2xl font-bold mb-4">Xác Nhận Email Thất Bại</h2>
+                        <p className="mb-4">Chúng tôi không thể xác nhận địa chỉ email của bạn. Có thể liên kết xác nhận đã hết hạn hoặc không hợp lệ.</p>
+                        <Button onClick={() => window.location.href = '/sign-up'}>Quay lại Đăng ký</Button>
                     </>
                 );
         }

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -16,26 +16,37 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import axios from "axios";
+import { useRouter } from "next/navigation";
+import http from "@/utils/http";
 
 const formSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters.",
-  }).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, {
-    message: "Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character.",
-  }),
+  email: z
+    .string()
+    .email({
+      message: "Vui lòng nhập một địa chỉ email hợp lệ.",
+    }),
+  password: z
+    .string()
+    .min(8, {
+      message: "Mật khẩu phải có ít nhất 8 ký tự.",
+    })
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+      {
+        message:
+          "Mật khẩu phải chứa ít nhất một chữ cái viết thường, một chữ cái viết hoa, một chữ số và một ký tự đặc biệt.",
+      }
+    ),
   passwordConfirmation: z.string(),
   marketingAccept: z.boolean().default(false).optional(),
 }).refine((data) => data.password === data.passwordConfirmation, {
-  message: "Passwords don't match",
+  message: "Mật khẩu không khớp",
   path: ["passwordConfirmation"],
 });
 
-export default function SignUpPage() {
+export default function TrangDangKy() {
   const [verificationSent, setVerificationSent] = useState<boolean>(false);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,20 +60,24 @@ export default function SignUpPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const response = await axios.post('http://localhost:8080/wordwaves/users', {
-        email: values.email,
-        password: values.password
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await http.post(
+        "/users",
+        {
+          email: values.email,
+          password: values.password,
         },
-      });
-      
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       if (response.data && response.data.code === 1000) {
         setVerificationSent(true);
       }
     } catch (error) {
-      console.error('Registration failed:', error);
+      console.error("Đăng ký thất bại:", error);
     }
   }
 
@@ -70,11 +85,20 @@ export default function SignUpPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
         <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md text-center">
-          <h2 className="text-2xl font-bold mb-4">Please check your email</h2>
-          <p className="mb-4">A verification email has been sent to your email address. Please check your inbox and follow the instructions to verify your account.</p>
+          <h2 className="text-2xl font-bold mb-4">Vui lòng kiểm tra email của bạn</h2>
+          <p className="mb-4">
+            Một email xác minh đã được gửi đến địa chỉ email của bạn. Vui lòng kiểm tra hộp thư đến và làm theo hướng dẫn để xác minh tài khoản.
+          </p>
           <p className="text-sm text-gray-500">
-            Didn't receive the email? Check your spam folder or
-            <Button variant="link" className="p-0 h-auto font-normal" onClick={() => setVerificationSent(false)}>try signing up again</Button>.
+            Chưa nhận được email? Kiểm tra thư mục spam hoặc{" "}
+            <Button
+              variant="link"
+              className="p-0 h-auto font-normal"
+              onClick={() => setVerificationSent(false)}
+            >
+              thử đăng ký lại
+            </Button>
+            .
           </p>
         </div>
       </div>
@@ -84,7 +108,6 @@ export default function SignUpPage() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-
         <FormField
           control={form.control}
           name="email"
@@ -92,7 +115,11 @@ export default function SignUpPage() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="johndoe@example.com" {...field} />
+                <Input
+                  type="email"
+                  placeholder="nguyenvan@example.com"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -104,7 +131,7 @@ export default function SignUpPage() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Mật khẩu</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
@@ -118,7 +145,7 @@ export default function SignUpPage() {
           name="passwordConfirmation"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password Confirmation</FormLabel>
+              <FormLabel>Xác nhận mật khẩu</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
@@ -140,7 +167,7 @@ export default function SignUpPage() {
               </FormControl>
               <div className="space-y-1 leading-none">
                 <FormLabel>
-                  I want to receive emails about events, product updates and company announcements.
+                  Tôi muốn nhận email về sự kiện, cập nhật sản phẩm và thông báo từ công ty.
                 </FormLabel>
               </div>
             </FormItem>
@@ -148,17 +175,27 @@ export default function SignUpPage() {
         />
 
         <div className="text-sm text-gray-500">
-          By creating an account, you agree to our
-          <a href="#" className="text-gray-700 underline"> terms and conditions </a>
-          and
-          <a href="#" className="text-gray-700 underline"> privacy policy</a>.
+          Bằng việc tạo tài khoản, bạn đồng ý với{" "}
+          <a href="#" className="text-gray-700 underline">
+            điều khoản và điều kiện
+          </a>{" "}
+          và{" "}
+          <a href="#" className="text-gray-700 underline">
+            chính sách bảo mật
+          </a>
+          .
         </div>
 
         <div className="flex items-center justify-between">
-          <Button type="submit" className="text-white">Create an account</Button>
+          <Button type="submit" className="text-white">
+            Tạo tài khoản
+          </Button>
           <p className="text-sm text-gray-500">
-            Already have an account?
-            <a href="#" className="text-gray-700 underline"> Log in</a>.
+            Đã có tài khoản?{" "}
+            <a href="#" className="text-gray-700 underline">
+              Đăng nhập
+            </a>
+            .
           </p>
         </div>
       </form>

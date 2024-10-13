@@ -16,16 +16,17 @@ import {
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { useSearchParams, useRouter } from "next/navigation";
+import http from "@/utils/http";
 
 const formSchema = z.object({
     newPassword: z.string()
-        .min(8, { message: "Password must be at least 8 characters long." })
+        .min(8, { message: "Mật khẩu phải có ít nhất 8 ký tự." })
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/, {
-            message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+            message: "Mật khẩu phải chứa ít nhất một chữ cái viết hoa, một chữ cái viết thường, một số và một ký tự đặc biệt.",
         }),
     confirmPassword: z.string(),
 }).refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: "Mật khẩu không khớp.",
     path: ["confirmPassword"],
 });
 
@@ -44,33 +45,38 @@ export default function ResetPasswordPage() {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const response = await axios.put(`http://localhost:8080/wordwaves/users/reset-password?token=${token}`, {
-                newPassword: values.newPassword,
-                confirmPassword: values.confirmPassword,
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
+            const response = await http.put(
+                `/users/reset-password`,
+                {
+                    token,
+                    newPassword: values.newPassword,
+                    confirmPassword: values.confirmPassword,
                 },
-            });
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
 
             if (response.data && response.data.code === 1000) {
-                setResetStatus("Password reset successful. Redirecting to login page...");
+                setResetStatus("Đặt lại mật khẩu thành công. Đang chuyển hướng đến trang đăng nhập...");
                 setTimeout(() => {
                     router.push('/sign-in');
                 }, 3000);
             } else {
-                setResetStatus("Password reset failed. Please try again.");
+                setResetStatus("Đặt lại mật khẩu thất bại. Vui lòng thử lại.");
             }
         } catch (error) {
-            console.error('Password reset failed:', error);
+            console.error('Đặt lại mật khẩu thất bại:', error);
             if (axios.isAxiosError(error) && error.response) {
                 if (error.response.status === 400) {
-                    setResetStatus("Invalid password format. Please ensure your password meets the requirements.");
+                    setResetStatus("Định dạng mật khẩu không hợp lệ. Vui lòng đảm bảo mật khẩu đáp ứng các yêu cầu.");
                 } else {
-                    setResetStatus("An error occurred. Please try again.");
+                    setResetStatus("Đã xảy ra lỗi. Vui lòng thử lại.");
                 }
             } else {
-                setResetStatus("An unexpected error occurred. Please try again.");
+                setResetStatus("Đã xảy ra lỗi không mong muốn. Vui lòng thử lại.");
             }
         }
     }
@@ -83,12 +89,14 @@ export default function ResetPasswordPage() {
                     name="newPassword"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>New Password</FormLabel>
+                            <FormLabel>Mật khẩu mới</FormLabel>
                             <FormControl>
                                 <Input type="password" {...field} />
                             </FormControl>
                             <FormMessage />
-                            <p className="text-sm text-gray-500">Password must contain at least 8 characters, including uppercase and lowercase letters, numbers, and special characters.</p>
+                            <p className="text-sm text-gray-500">
+                                Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt.
+                            </p>
                         </FormItem>
                     )}
                 />
@@ -98,7 +106,7 @@ export default function ResetPasswordPage() {
                     name="confirmPassword"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Confirm New Password</FormLabel>
+                            <FormLabel>Xác nhận mật khẩu mới</FormLabel>
                             <FormControl>
                                 <Input type="password" {...field} />
                             </FormControl>
@@ -107,10 +115,10 @@ export default function ResetPasswordPage() {
                     )}
                 />
 
-                <Button type="submit" className="text-white">Reset Password</Button>
+                <Button type="submit" className="text-white">Đặt lại mật khẩu</Button>
 
                 {resetStatus && (
-                    <p className={`text-center ${resetStatus.includes("successful") ? "text-green-600" : "text-red-600"}`}>
+                    <p className={`text-center ${resetStatus.includes("thành công") ? "text-green-600" : "text-red-600"}`}>
                         {resetStatus}
                     </p>
                 )}

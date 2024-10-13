@@ -15,10 +15,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
+import http from "@/utils/http";
 
 const formSchema = z.object({
     email: z.string().email({
-        message: "Please enter a valid email address.",
+        message: "Vui lòng nhập địa chỉ email hợp lệ.",
     }),
 });
 
@@ -34,7 +35,7 @@ export default function ForgotPasswordPage() {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const response = await axios.post('http://localhost:8080/wordwaves/users/forgot-password', {
+            const response = await http.post('/users/forgot-password', {
                 email: values.email,
             }, {
                 headers: {
@@ -43,13 +44,13 @@ export default function ForgotPasswordPage() {
             });
 
             if (response.data && response.data.code === 1000) {
-                setRequestStatus("Password reset request successful. Please check your email.");
+                setRequestStatus("Yêu cầu đặt lại mật khẩu thành công. Vui lòng kiểm tra email của bạn.");
             } else {
-                setRequestStatus("Password reset request failed. Please try again.");
+                setRequestStatus("Yêu cầu đặt lại mật khẩu thất bại. Vui lòng thử lại.");
             }
         } catch (error) {
-            console.error('Password reset request failed:', error);
-            setRequestStatus("An error occurred. Please try again.");
+            console.error('Yêu cầu đặt lại mật khẩu thất bại:', error);
+            setRequestStatus("Đã xảy ra lỗi. Vui lòng thử lại.");
         }
     }
 
@@ -70,17 +71,17 @@ export default function ForgotPasswordPage() {
                     )}
                 />
 
-                <Button type="submit" className="text-white">Reset Password</Button>
+                <Button type="submit" className="text-white">Đặt lại mật khẩu</Button>
 
                 {requestStatus && (
-                    <p className={`text-center ${requestStatus.includes("successful") ? "text-green-600" : "text-red-600"}`}>
+                    <p className={`text-center ${requestStatus.includes("thành công") ? "text-green-600" : "text-red-600"}`}>
                         {requestStatus}
                     </p>
                 )}
 
                 <p className="text-sm text-gray-500">
-                    Remember your password?
-                    <a href="/sign-in" className="text-gray-700 underline"> Sign in</a>.
+                    Nhớ mật khẩu?
+                    <a href="/sign-in" className="text-gray-700 underline"> Đăng nhập</a>.
                 </p>
             </form>
         </Form>

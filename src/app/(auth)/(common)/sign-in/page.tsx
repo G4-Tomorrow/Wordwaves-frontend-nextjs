@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -14,17 +14,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import axios from "axios";
 import { useRouter } from "next/navigation";
+import http from "@/utils/http";
 
 const formSchema = z.object({
   email: z.string().email({
-    message: "Please enter a valid email address.",
+    message: "Vui lòng nhập địa chỉ email hợp lệ.",
   }),
   password: z.string(),
 });
 
-export default function SignInPage() {
+export default function TrangDangNhap() {
   const [loginStatus, setLoginStatus] = useState<string | null>(null);
   const router = useRouter();
 
@@ -38,37 +38,51 @@ export default function SignInPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const response = await axios.post('http://localhost:8080/wordwaves/auth/login', {
-        email: values.email,
-        password: values.password
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await http.post(
+        "/auth/login",
+        {
+          email: values.email,
+          password: values.password,
         },
-        withCredentials: true, 
-      });
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
 
       if (response.data && response.data.code === 1000) {
-        setLoginStatus("Login successful!");
-       
-        localStorage.setItem('accessToken', response.data.result.accessToken);
-       
-        localStorage.setItem('user', JSON.stringify(response.data.result.user));
-     
-        router.push('/');
+        setLoginStatus("Đăng nhập thành công!");
+
+        localStorage.setItem(
+          "accessToken",
+          response.data.result.accessToken
+        );
+        localStorage.setItem(
+          "user",
+          JSON.stringify(response.data.result.user)
+        );
+        
+
+        router.push("/");
+      } else if (response.data.code === 1008) {
+        setLoginStatus(response.data.message || "Tài khoản không tồn tại.");
       } else {
-        setLoginStatus("Login failed. Please check your credentials.");
+        setLoginStatus(
+          response.data.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin."
+        );
       }
-    } catch (error) {
-      console.error('Login failed:', error);
-      setLoginStatus("An error occurred. Please try again.");
+    } catch (error: any) {
+      setLoginStatus(
+        error.response?.data?.message || "Có lỗi xảy ra. Vui lòng thử lại."
+      );
     }
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-
         <FormField
           control={form.control}
           name="email"
@@ -76,7 +90,11 @@ export default function SignInPage() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="johndoe@example.com" {...field} />
+                <Input
+                  type="email"
+                  placeholder="nguyenvan@example.com"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -88,7 +106,7 @@ export default function SignInPage() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Mật khẩu</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
@@ -97,32 +115,45 @@ export default function SignInPage() {
           )}
         />
 
-
-
-
-
         <div className="text-sm text-gray-500">
-          By creating an account, you agree to our
-          <a href="#" className="text-gray-700 underline"> terms and conditions </a>
-          and
-          <a href="#" className="text-gray-700 underline"> privacy policy</a>.
+          Bằng cách tạo tài khoản, bạn đồng ý với{" "}
+          <a href="#" className="text-gray-700 underline">
+            điều khoản và điều kiện
+          </a>{" "}
+          và{" "}
+          <a href="#" className="text-gray-700 underline">
+            chính sách bảo mật
+          </a>{" "}
+          của chúng tôi.
         </div>
 
         <div className="flex items-center justify-between">
-          <Button type="submit" className="text-white">Sign In</Button>
+          <Button type="submit" className="text-white">
+            Đăng nhập
+          </Button>
 
           {loginStatus && (
-            <p className={`text-center ${loginStatus.includes("successful") ? "text-green-600" : "text-red-600"}`}>
+            <p
+              className={`text-center ${loginStatus.includes("thành công")
+                  ? "text-green-600"
+                  : "text-red-600"
+                }`}
+            >
               {loginStatus}
             </p>
           )}
           <p className="text-sm text-gray-500">
-            Already have an account?
-            <a href="#" className="text-gray-700 underline"> Log in</a>.
+            Bạn đã có tài khoản?{" "}
+            <a href="#" className="text-gray-700 underline">
+              Đăng nhập
+            </a>
+            .
           </p>
         </div>
         <p className="text-sm text-gray-500 text-center">
-          <a href="/forgot-password" className="text-gray-700 underline">Forgot your password?</a>
+          <a href="/forgot-password" className="text-gray-700 underline">
+            Quên mật khẩu?
+          </a>
         </p>
       </form>
     </Form>

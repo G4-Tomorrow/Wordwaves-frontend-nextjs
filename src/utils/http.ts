@@ -1,11 +1,11 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
-
+import { Modal } from 'antd';
 class Http {
   instance: AxiosInstance;
 
   constructor() {
     this.instance = axios.create({
-      baseURL: "http://localhost:8080/wordwaves/",
+      baseURL: "https://backend-production-c2cb.up.railway.app/wordwaves",
       timeout: 10000000,
       headers: {
         "Content-Type": "application/json",
@@ -21,25 +21,28 @@ class Http {
 
   private handleError = async (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // Token has expired
-      try {
-      
-        await this.post('/auth/logout');
-      } catch (logoutError) {
-        console.error('Error during logout:', logoutError);
-      }
+     
+      Modal.warning({
+        title: "Phiên đăng nhập hết hạn",
+        content: "Vui lòng đăng nhập lại để tiếp tục.",
+        onOk: () => {
+     
+          localStorage.removeItem("user");
 
-      localStorage.removeItem('user');
-
-      window.location.href = '/sign-in';
+         
+          window.location.href = "/sign-in";
+        },
+      });
 
       return Promise.reject(error);
     }
+
+    // Xử lý lỗi khác
     return Promise.reject(error);
   };
 
   setToken(token: string) {
-    console.log('New access token received');
+    console.log("New access token received");
   }
 
   clearToken() {

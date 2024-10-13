@@ -95,10 +95,10 @@ const MainContent: React.FC = () => {
 
         {/* Pinned Folder Section */}
         <div className="mt-6">
-          <div className="flex items-center justify-between mb-3 text-[17px]">
+          <div className="flex items-center justify-between mb-3 ">
             <h3 className="font-semibold">Thư mục đã ghim</h3>
             <button
-              className="bg-primary text-white p-2 rounded-xl focus:outline-none"
+              className="bg-primary text-white p-2 rounded-xl focus:outline-none "
               onClick={handleSelectPinnedFolderClick}
             >
               {pinnedFolders.length > 0

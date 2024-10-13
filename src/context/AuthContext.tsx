@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import http from '@/utils/http';
 import { useRouter } from 'next/navigation';
-
+import Cookies from "js-cookie";
 interface User {
     id: string;
     email: string;
@@ -34,12 +34,18 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const token = localStorage.getItem("accessToken");
 
     const logout = async () => {
         try {
-            await http.post('/auth/logout');
+            await http.post('/auth/logout', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             setUser(null);
-            router.push('/login');
+            localStorage.removeItem('token');
+            router.push('/sign-in');
         } catch (err) {
             console.error('Error during logout:', err);
         }
@@ -47,11 +53,23 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
     const refreshToken = async () => {
         try {
-            const response = await http.post<{ code: number; result: { accessToken: string; user: User } }>('/auth/refresh');
+            const refreshToken = Cookies.get('refresh_token'); 
+
+
+            if (!refreshToken) {
+                throw new Error('No refresh token found in cookies');
+            }
+
+            const response = await http.get<{ code: number; result: { accessToken: string; user: User } }>('/auth/refresh', {
+                headers: {
+                    'Authorization': `Bearer ${refreshToken}`, 
+                },
+            });
 
             if (response.data.code === 1000) {
-                setUser(response.data.result.user);
-                http.setToken(response.data.result.accessToken);
+                localStorage.setItem('token', response.data.result.accessToken);
+                fetchUserInfo(response.data.result.accessToken);
+                console.log('Token refreshed successfully');
             } else {
                 throw new Error('Failed to refresh token');
             }
@@ -62,9 +80,15 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
     };
 
-    const fetchUserInfo = async () => {
+
+
+    const fetchUserInfo = async (token: string) => {
         try {
-            const response = await http.get<{ code: number; result: User }>('/users/myinfo');
+            const response = await http.get<{ code: number; result: User }>('/users/myinfo', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
             if (response.data.code === 1000) {
                 setUser(response.data.result);
@@ -81,9 +105,21 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     };
 
     useEffect(() => {
-        fetchUserInfo();
+        const token = localStorage.getItem('token');
+        console.log('sagsasa',document.cookie);
 
-        const refreshInterval = setInterval(refreshToken, 55 * 60 * 1000);
+        if (token) {
+            fetchUserInfo(token);
+        } else {
+            setLoading(false);
+        }
+
+       
+        const refreshInterval = setInterval(() => {
+          
+
+            refreshToken();
+        }, 30  * 1000); 
 
         return () => clearInterval(refreshInterval);
     }, []);

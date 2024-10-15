@@ -1,9 +1,8 @@
 "use client"
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
 import http from '@/utils/http';
 import { useRouter } from 'next/navigation';
-import Cookies from "js-cookie";
+import React, { createContext, useContext, useEffect, useState } from 'react';
 interface User {
     id: string;
     email: string;
@@ -53,34 +52,24 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
     const refreshToken = async () => {
         try {
-            const refreshToken = Cookies.get('refresh_token'); 
+            
+            const response = await http.get<{ code: number; result: { accessToken: string } }>('/auth/refresh');
 
-
-            if (!refreshToken) {
-                throw new Error('No refresh token found in cookies');
-            }
-
-            const response = await http.get<{ code: number; result: { accessToken: string; user: User } }>('/auth/refresh', {
-                headers: {
-                    'Authorization': `Bearer ${refreshToken}`, 
-                },
-            });
-
+           
             if (response.data.code === 1000) {
-                localStorage.setItem('token', response.data.result.accessToken);
-                fetchUserInfo(response.data.result.accessToken);
-                console.log('Token refreshed successfully');
+                const newAccessToken = response.data.result.accessToken;
+              
+                localStorage.setItem('accessToken', newAccessToken); 
+             
             } else {
-                throw new Error('Failed to refresh token');
+                throw new Error('Failed to refresh access token');
             }
         } catch (err) {
-            console.error('Error refreshing token:', err);
+           
             setError('Failed to refresh authentication');
-            setUser(null);
+          
         }
     };
-
-
 
     const fetchUserInfo = async (token: string) => {
         try {
@@ -105,8 +94,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        console.log('sagsasa',document.cookie);
+        const token = localStorage.getItem('accessToken');
 
         if (token) {
             fetchUserInfo(token);
@@ -114,15 +102,13 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
             setLoading(false);
         }
 
-       
         const refreshInterval = setInterval(() => {
-          
-
             refreshToken();
-        }, 30  * 1000); 
+        }, 55 * 60 * 1000); 
 
         return () => clearInterval(refreshInterval);
     }, []);
+
 
     return (
         <AuthContext.Provider value={{ user, loading, error, logout }}>

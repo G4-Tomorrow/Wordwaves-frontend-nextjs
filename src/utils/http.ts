@@ -1,5 +1,11 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from "axios";
-import { Modal } from 'antd';
+import axios, {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosError,
+  AxiosResponse,
+} from "axios";
+import { Modal } from "antd";
+
 class Http {
   instance: AxiosInstance;
 
@@ -21,15 +27,11 @@ class Http {
 
   private handleError = async (error: AxiosError) => {
     if (error.response?.status === 401) {
-     
       Modal.warning({
         title: "Phiên đăng nhập hết hạn",
         content: "Vui lòng đăng nhập lại để tiếp tục.",
         onOk: () => {
-     
           localStorage.removeItem("user");
-
-         
           window.location.href = "/sign-in";
         },
       });
@@ -37,7 +39,6 @@ class Http {
       return Promise.reject(error);
     }
 
-    // Xử lý lỗi khác
     return Promise.reject(error);
   };
 
@@ -49,23 +50,42 @@ class Http {
     delete this.instance.defaults.headers.common["Authorization"];
   }
 
-  get<T>(url: string, config?: AxiosRequestConfig) {
+
+  get<T = any>(
+    url: string,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.instance.get<T>(url, config);
   }
 
-  post<T>(url: string, data?: any, config?: AxiosRequestConfig) {
+  post<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.instance.post<T>(url, data, config);
   }
 
-  put<T>(url: string, data?: any, config?: AxiosRequestConfig) {
+  put<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.instance.put<T>(url, data, config);
   }
 
-  patch<T>(url: string, data?: any, config?: AxiosRequestConfig) {
+  patch<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.instance.patch<T>(url, data, config);
   }
 
-  delete<T>(url: string, config?: AxiosRequestConfig) {
+  delete<T = any>(
+    url: string,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<T>> {
     return this.instance.delete<T>(url, config);
   }
 }
@@ -96,7 +116,6 @@ export class HttpError extends Error {
     this.status = status;
     this.payload = payload;
 
- 
     Object.setPrototypeOf(this, HttpError.prototype);
   }
 }

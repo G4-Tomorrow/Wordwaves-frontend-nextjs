@@ -48,20 +48,8 @@ function AuthLayout({children}: {children: React.ReactNode}) {
         </section>
 
         <main className="flex items-center justify-center px-8 py-8 sm:px-12 lg:col-span-7 lg:px-16 lg:py-12 xl:col-span-6">
-          <div className="max-w-xl lg:max-w-3xl">
-            <div className="flex justify-center mb-8 relative">
-              <TabButton href="/sign-in" label="Sign In" />
-              <TabButton href="/sign-up" label="Sign Up" />
-              <motion.div
-                className="absolute bottom-0 h-0.5 bg-primary"
-                initial={false}
-                animate={{
-                  left: pathname === '/sign-in' ? '0%' : '50%',
-                  right: pathname === '/sign-up' ? '0%' : '50%',
-                }}
-                transition={{ duration: 0.3 }}
-              />
-            </div>
+          <div className="w-full">
+           
             {children}
           </div>
         </main>
@@ -75,7 +63,7 @@ function TabButton({ href, label }: { href: string; label: string }) {
   const isActive = pathname === href
 
   return (
-    <ThemeProvider forcedTheme="light">
+  
     <Link
       href={href}
       className={cn(
@@ -87,7 +75,7 @@ function TabButton({ href, label }: { href: string; label: string }) {
     >
       {label}
     </Link>
-    </ThemeProvider>
+    
   )
 }
 

@@ -30,7 +30,7 @@ const VocabularySet: React.FC<VocabularySetProps> = ({
   height = 44,
 }) => (
   <div
-    className={`relative bg-white p-4 rounded-xl shadow-md overflow-hidden flex flex-col justify-end
+    className={`relative bg-white rounded-xl shadow-md overflow-hidden flex flex-col justify-end
     ${width === 64 ? "w-64" : ""}
     ${width === 56 ? "w-56" : ""}
     ${height === 44 ? "h-44" : ""}
@@ -42,7 +42,7 @@ const VocabularySet: React.FC<VocabularySetProps> = ({
       width={224}
       height={126}
       alt={`${title} thumbnail`}
-      className="absolute inset-0 w-full h-full object-cover opacity-95 brightness-75"
+      className="absolute inset-0 w-auto h-auto object-cover opacity-95 brightness-75"
     />
 
     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>

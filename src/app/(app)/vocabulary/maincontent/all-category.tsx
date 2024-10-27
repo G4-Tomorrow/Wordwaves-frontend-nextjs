@@ -5,14 +5,14 @@ import VocabularySet from "@/app/(app)/vocabulary/maincontent/vocabulary-set";
 type AllCategoriesProps = {
   showAllCategories: boolean;
   groupedVocabularyData: { [categoryName: string]: any[] };
-  handleSelectPinnedFolder: (folder: any) => void;
+  handleSelectPinnedCollection: (folder: any) => void;
   handleShowAllCategories: () => void;
 };
 
 const AllCategories: React.FC<AllCategoriesProps> = ({
   showAllCategories,
   groupedVocabularyData,
-  handleSelectPinnedFolder,
+  handleSelectPinnedCollection,
   handleShowAllCategories,
 }) => {
   return (
@@ -53,7 +53,9 @@ const AllCategories: React.FC<AllCategoriesProps> = ({
               </div>
               <div className="flex flex-wrap gap-6 pl-4">
                 {groupedVocabularyData[categoryName].map((vocabulary) => (
-                  <button onClick={() => handleSelectPinnedFolder(vocabulary)}>
+                  <button
+                    onClick={() => handleSelectPinnedCollection(vocabulary)}
+                  >
                     <VocabularySet
                       key={vocabulary.id}
                       title={vocabulary.name}

@@ -18,8 +18,9 @@ import AllTopicOfCollection from "./all-topic-of-category";
 
 const MainContent: React.FC = () => {
   const [showAllCategories, setShowAllCategories] = useState(false);
-  const [pinnedFolders, setPinnedFolders] = useState<any[]>([]);
-  const [isSelectingPinnedFolder, setIsSelectingPinnedFolder] = useState(false);
+  const [pinnedCollections, setPinnedCollections] = useState<any[]>([]);
+  const [isSelectingPinnedCollection, setIsSelectingPinnedCollection] =
+    useState(false);
   const [collectionData, setCollectionData] = useState<any[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<any | null>(
     null
@@ -44,9 +45,9 @@ const MainContent: React.FC = () => {
         : getCollectionData(token);
     }
 
-    const cachedPinnedFolders = localStorage.getItem("pinnedFolders");
-    if (cachedPinnedFolders) {
-      setPinnedFolders(JSON.parse(cachedPinnedFolders));
+    const cachedPinnedCollections = localStorage.getItem("pinnedCollections");
+    if (cachedPinnedCollections) {
+      setPinnedCollections(JSON.parse(cachedPinnedCollections));
     }
   }, [user]);
 
@@ -95,19 +96,19 @@ const MainContent: React.FC = () => {
     setShowAllCategories(true);
   };
 
-  const handleSelectPinnedFolderClick = () => {
-    setIsSelectingPinnedFolder(true);
+  const handleSelectPinnedCollectionClick = () => {
+    setIsSelectingPinnedCollection(true);
     setShowAllCategories(true);
   };
 
-  const handleSelectPinnedFolder = (folder: any) => {
-    if (isSelectingPinnedFolder) {
-      setPinnedFolders([folder]);
-      localStorage.setItem("pinnedFolders", JSON.stringify([folder]));
-      setIsSelectingPinnedFolder(false);
+  const handleSelectPinnedCollection = (collection: any) => {
+    if (isSelectingPinnedCollection) {
+      setPinnedCollections([collection]);
+      localStorage.setItem("pinnedCollections", JSON.stringify([collection]));
+      setIsSelectingPinnedCollection(false);
       setShowAllCategories(false);
     } else {
-      handleOpenCollectionDetail(folder);
+      handleOpenCollectionDetail(collection);
       setShowTopicModal(true);
     }
   };
@@ -147,53 +148,53 @@ const MainContent: React.FC = () => {
           </div>
         </div>
 
-        {/* Pinned Folder Section */}
+        {/* Pinned Collection Section */}
         <div className="lg:w-4/5 xl:w-full">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold">Thư mục đã ghim</h3>
+            <h3 className="font-semibold">Bộ sưu tập đã ghim</h3>
             <button
               className="bg-primary text-white p-2 rounded-xl"
-              onClick={handleSelectPinnedFolderClick}
+              onClick={handleSelectPinnedCollectionClick}
             >
-              {pinnedFolders.length > 0
-                ? "Chọn thư mục khác"
-                : "Chọn thư mục để ghim"}
+              {pinnedCollections.length > 0
+                ? "Chọn bộ sưu tập khác"
+                : "Chọn bộ sưu tập để ghim"}
             </button>
           </div>
 
-          {pinnedFolders.length > 0 ? (
-            pinnedFolders.map((folder, index) => (
+          {pinnedCollections.length > 0 ? (
+            pinnedCollections.map((collection, index) => (
               <div
                 key={index}
                 className="flex flex-col gap-3 justify-center bg-white p-4 rounded-xl relative dark:bg-[#222222]"
               >
                 <div className="flex gap-3">
                   <Image
-                    src={folder.thumbnail}
+                    src={collection.thumbnail}
                     width={100}
                     height={100}
-                    alt="folder"
+                    alt="collection"
                     className="w-16 h-16 rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-[5px]"
                   />
                   <div className="w-full flex flex-col justify-around items-start">
-                    <p className="font-semibold text-lg">{folder.name}</p>
+                    <p className="font-semibold text-lg">{collection.name}</p>
                     <div className="text-xs text-gray-500 flex gap-2 font-semibold">
                       <div className="flex items-center text-[#0088E6] gap-1">
                         <IconCircleCheckFilled width={19} height={19} />
                         <p className="mt-0.5 tracking-[0.1em]">
-                          {folder.numOfLearnedWord}/{folder.numOfTotalWords} đã
-                          học
+                          {collection.numOfLearnedWord}/
+                          {collection.numOfTotalWords} đã học
                         </p>
                       </div>
                       <div className="flex items-center text-primary gap-1">
                         <IconClockFilled width={19} height={19} />
                         <p className="mt-0.5">
-                          {folder.numOfLearningWord} cần luyện tập
+                          {collection.numOfLearningWord} cần luyện tập
                         </p>
                       </div>
                       <button
                         className="absolute top-5 right-5"
-                        onClick={() => handleOpenCollectionDetail(folder)}
+                        onClick={() => handleOpenCollectionDetail(collection)}
                       >
                         <IconChevronRight width={21} height={21} />
                       </button>
@@ -210,7 +211,7 @@ const MainContent: React.FC = () => {
               </div>
             ))
           ) : (
-            <p>Chưa có thư mục nào được ghim.</p>
+            <p>Chưa có bộ sưu tập nào được ghim.</p>
           )}
         </div>
       </div>
@@ -231,7 +232,7 @@ const MainContent: React.FC = () => {
       <AllCategories
         showAllCategories={showAllCategories}
         groupedVocabularyData={groupedCollectionData}
-        handleSelectPinnedFolder={handleSelectPinnedFolder}
+        handleSelectPinnedCollection={handleSelectPinnedCollection}
         handleShowAllCategories={handleShowAllCategories}
       />
 

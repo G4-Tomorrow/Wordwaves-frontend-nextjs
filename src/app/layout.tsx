@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Badge } from "@/components/ui/badge";
 import SidebarApp from "@/app/(app)/sidebar-app";
 import { AuthContextProvider } from "@/context/AuthContext";
-import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -33,10 +32,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#f4f7fc]`}
       >
-        {/* <AuthContextProvider> */}
-        <Toaster />
-        {children}
-        {/* </AuthContextProvider> */}
+        <AuthContextProvider>
+          {children}
+        </AuthContextProvider>
+    
+       
+       
       </body>
     </html>
   );

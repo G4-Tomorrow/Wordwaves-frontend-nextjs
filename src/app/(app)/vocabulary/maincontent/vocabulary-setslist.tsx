@@ -8,12 +8,12 @@ import VocabularySet from "@/app/(app)/vocabulary/maincontent/vocabulary-set";
 import { Button } from "@/components/ui/button";
 
 interface VocabularySetsListProps {
-  onShowAllCategories: () => void;
+  onShowAllCollection: () => void;
   groupedVocabularyData: { [categoryName: string]: any[] };
 }
 
 const VocabularySetsList: React.FC<VocabularySetsListProps> = ({
-  onShowAllCategories,
+  onShowAllCollection,
   groupedVocabularyData = {},
 }) => {
   return (
@@ -24,10 +24,10 @@ const VocabularySetsList: React.FC<VocabularySetsListProps> = ({
           <div
             key={categoryName}
             className="hover:bg-gray-200 dark:hover:bg-[#222222] hover:cursor-pointer pt-2 pl-6 pb-6"
-            onClick={onShowAllCategories}
+            onClick={onShowAllCollection}
           >
             <div className="pl-4">
-              <h2>{categoryName}</h2>
+              <p className="font-medium">{categoryName}</p>
               <p className="text-sm text-primary mb-2.5">
                 {groupedVocabularyData[categoryName].length} thư mục
               </p>
@@ -39,7 +39,7 @@ const VocabularySetsList: React.FC<VocabularySetsListProps> = ({
               }}
               className="w-full lg:max-w-4xl 2xl:max-w-5xl"
             >
-              <CarouselContent className="lg:space-x-[-20px] xl:space-x-12">
+              <CarouselContent className="lg:space-x-[-20px] xl:space-x-[44px]">
                 {groupedVocabularyData[categoryName]
                   .slice(0, 5)
                   .map((category) => (

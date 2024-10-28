@@ -9,6 +9,7 @@ import {
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import WordDetailModal from "@/app/(app)/vocabulary/maincontent/word-detail";
+import AddWordForm from "@/app/(app)/vocabulary/maincontent/add-word-form";
 
 interface Word {
   id: string;
@@ -31,6 +32,7 @@ const AllWordOfTopic: React.FC<{
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showAddWordModal, setShowAddWordModal] = useState(false);
 
   useEffect(() => {
     if (!selectedTopic) return;
@@ -45,7 +47,7 @@ const AllWordOfTopic: React.FC<{
       setLoading(true);
       try {
         const response = await http.get(
-          `/topics/${topicId}/words?pageNumber=1&pageSize=1`,
+          `/topics/${topicId}/words?pageNumber=1&pageSize=20`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -72,11 +74,25 @@ const AllWordOfTopic: React.FC<{
     setSelectedWord(null);
   };
 
+  const handleWordAdded = () => {
+    if (selectedTopic) {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        fetchWordsOfTopic(token, selectedTopic.id);
+      }
+    }
+    setShowAddWordModal(false);
+  };
+
+  const handleShowAddWordModal = () => {
+    setShowAddWordModal((prev) => !prev);
+  };
+
   if (!showWordModal) return null;
 
   return (
     <div
-      className={`fixed inset-0 bg-white z-50 overflow-y-auto overflow-hidden transition-all duration-300 ease-in-out transform dark:bg-[#222222] ${
+      className={`fixed inset-0 bg-white z-50 overflow-y-auto overflow-hidden transition-all duration-300 ease-in-out transform dark:bg-[#222222] scrollbar-hide ${
         showWordModal
           ? "scale-100 opacity-100 pointer-events-auto"
           : "scale-50 opacity-0 pointer-events-none"
@@ -125,6 +141,27 @@ const AllWordOfTopic: React.FC<{
         </div>
       </div>
 
+      {/* Button to open Add Word Modal */}
+      <div className="flex justify-end px-16 py-4">
+        <button
+          onClick={handleShowAddWordModal}
+          className="bg-primary text-white px-4 py-2 rounded-lg"
+        >
+          Add New Word
+        </button>
+      </div>
+
+      {/* Add Word Modal */}
+      {selectedTopic && showAddWordModal && (
+        <div className="absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
+          <AddWordForm
+            topicId={selectedTopic.id}
+            onWordAdded={handleWordAdded}
+            handleShowAddWordModal={handleShowAddWordModal}
+          />
+        </div>
+      )}
+
       {/* Content */}
       {loading ? (
         <div className="grid lg:grid-cols-3 gap-4 px-16 py-10">
@@ -137,7 +174,7 @@ const AllWordOfTopic: React.FC<{
           Error fetching data: {error}
         </div>
       ) : (
-        <div className="grid lg:grid-cols-3 gap-4 px-16 py-10">
+        <div className="grid lg:grid-cols-3 gap-9 px-14 py-10 ">
           {words.map((word) => (
             <div
               key={word.id}
@@ -160,10 +197,12 @@ const AllWordOfTopic: React.FC<{
                 {word.meanings.slice(0, 1).map((meaning) => (
                   <p
                     key={meaning.partOfSpeech}
-                    className=" text-gray-500 dark:text-gray-400 overflow-hidden whitespace-nowrap text-ellipsis"
+                    className=" text-gray-500 dark:text-gray-400 whitespace-nowrap block overflow-hidden text-ellipsis max-w-xs"
                   >
                     <span className="italic">({meaning.partOfSpeech})</span>
-                    {meaning.definitions[0].definition}
+                    <span className="overflow-hidden text-ellipsis">
+                      {meaning.definitions[0].definition}
+                    </span>
                   </p>
                 ))}
               </div>

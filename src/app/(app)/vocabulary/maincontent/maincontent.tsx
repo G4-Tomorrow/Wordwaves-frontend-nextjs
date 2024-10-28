@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback, useContext } from "react";
-import VocabularySetsList from "./vocabulary-setslist";
+import VocabularySetsList from "@/app/(app)/vocabulary/maincontent/vocabulary-setslist";
 import { AuthContext } from "@/context/AuthContext";
 import http from "@/utils/http";
 import Image from "next/image";

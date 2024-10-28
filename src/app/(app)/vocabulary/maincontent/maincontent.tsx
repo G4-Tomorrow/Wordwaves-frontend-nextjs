@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback, useContext } from "react";
 import VocabularySetsList from "./vocabulary-setslist";
 import { AuthContext } from "@/context/AuthContext";
 import http from "@/utils/http";
-import AllCategories from "@/app/(app)/vocabulary/maincontent/all-category";
 import Image from "next/image";
 import {
   IconBrandYoutubeFilled,
@@ -14,10 +13,12 @@ import {
   IconClockFilled,
   IconPlant,
 } from "@tabler/icons-react";
-import AllTopicOfCollection from "./all-topic-of-category";
+import { Skeleton } from "@/components/ui/skeleton";
+import AllTopicOfCollection from "./all-topic-of-collection";
+import AllCollection from "@/app/(app)/vocabulary/maincontent/all-collection";
 
 const MainContent: React.FC = () => {
-  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [showAllCollection, setShowAllCollection] = useState(false);
   const [pinnedCollections, setPinnedCollections] = useState<any[]>([]);
   const [isSelectingPinnedCollection, setIsSelectingPinnedCollection] =
     useState(false);
@@ -25,6 +26,7 @@ const MainContent: React.FC = () => {
   const [selectedCollection, setSelectedCollection] = useState<any | null>(
     null
   );
+  const [openedFromPinned, setOpenedFromPinned] = useState(false);
   const router = useRouter();
   const authContext = useContext(AuthContext);
   const user = authContext?.user;
@@ -80,25 +82,26 @@ const MainContent: React.FC = () => {
     []
   );
 
-  const handleShowAllCategories = () => {
-    setShowAllCategories((prev) => !prev);
+  const handleShowAllCollection = () => {
+    setShowAllCollection((prev) => !prev);
     setShowTopicModal(false);
   };
 
   const handleOpenCollectionDetail = (collection: any) => {
     setSelectedCollection(collection);
     setShowTopicModal(true);
-    setShowAllCategories(false);
+    setShowAllCollection(false);
   };
 
-  const handleCloseTopicModal = () => {
-    setShowTopicModal(false);
-    setShowAllCategories(true);
+  const handleOpenCollectionFromPinned = (collection: any) => {
+    setSelectedCollection(collection);
+    setOpenedFromPinned(true);
+    setShowTopicModal(true);
   };
 
   const handleSelectPinnedCollectionClick = () => {
     setIsSelectingPinnedCollection(true);
-    setShowAllCategories(true);
+    setShowAllCollection(true);
   };
 
   const handleSelectPinnedCollection = (collection: any) => {
@@ -106,11 +109,22 @@ const MainContent: React.FC = () => {
       setPinnedCollections([collection]);
       localStorage.setItem("pinnedCollections", JSON.stringify([collection]));
       setIsSelectingPinnedCollection(false);
-      setShowAllCategories(false);
+      setShowAllCollection(false);
     } else {
-      handleOpenCollectionDetail(collection);
+      handleOpenCollectionDetail(collection); // mở các topic của collection
       setShowTopicModal(true);
     }
+  };
+
+  const closeTopicModal = () => {
+    if (openedFromPinned) {
+      setShowTopicModal(false);
+      setShowAllCollection(false);
+    } else {
+      setShowTopicModal(false);
+      setShowAllCollection(true);
+    }
+    setOpenedFromPinned(false);
   };
 
   const groupedCollectionData = collectionData.reduce((acc, collection) => {
@@ -133,7 +147,7 @@ const MainContent: React.FC = () => {
           <div className="grid grid-cols-2 gap-4 w-full mt-4 text-primary ">
             <button
               className="bg-[#f4f7fc] dark:bg-[#222222] px-3 py-2.5 rounded-lg hover:bg-gray-200 focus:outline-none flex flex-col gap-1 items-center shadow"
-              onClick={handleShowAllCategories}
+              onClick={handleShowAllCollection}
             >
               <IconChartDotsFilled />
               <p>Từ vựng theo Chủ đề</p>
@@ -194,7 +208,9 @@ const MainContent: React.FC = () => {
                       </div>
                       <button
                         className="absolute top-5 right-5"
-                        onClick={() => handleOpenCollectionDetail(collection)}
+                        onClick={() =>
+                          handleOpenCollectionFromPinned(collection)
+                        }
                       >
                         <IconChevronRight width={21} height={21} />
                       </button>
@@ -219,31 +235,39 @@ const MainContent: React.FC = () => {
       {/* Right Section */}
       <div className="col-span-2 justify-center lg:pl-0 xl:pl-6 w-full">
         {loading ? (
-          <div className="">Loading...</div>
+          <div className="flex flex-col space-y-3 pt-2">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+            <div className="flex space-x-3">
+              <Skeleton className="h-[150px] w-[250px] rounded-xl" />
+              <Skeleton className="h-[150px] w-[250px] rounded-xl" />
+              <Skeleton className="h-[150px] w-[250px] rounded-xl" />
+            </div>
+          </div>
         ) : (
           <VocabularySetsList
-            onShowAllCategories={handleShowAllCategories}
+            onShowAllCollection={handleShowAllCollection}
             groupedVocabularyData={groupedCollectionData}
           />
         )}
       </div>
 
-      {/* Show All Categories Modal */}
-      <AllCategories
-        showAllCategories={showAllCategories}
+      {/* Show All Collection Modal */}
+      <AllCollection
+        showAllCollection={showAllCollection}
         groupedVocabularyData={groupedCollectionData}
         handleSelectPinnedCollection={handleSelectPinnedCollection}
-        handleShowAllCategories={handleShowAllCategories}
+        handleShowAllCollection={handleShowAllCollection}
       />
 
       {/* Show Topic Modal */}
-      {showTopicModal && selectedCollection && (
-        <AllTopicOfCollection
-          showTopicModal={showTopicModal}
-          selectedCollection={selectedCollection}
-          handleCloseTopicModal={handleCloseTopicModal}
-        />
-      )}
+      <AllTopicOfCollection
+        showTopicModal={showTopicModal}
+        selectedCollection={selectedCollection}
+        handleShowTopicModal={closeTopicModal}
+      />
     </div>
   );
 };

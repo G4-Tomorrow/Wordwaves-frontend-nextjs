@@ -2,12 +2,12 @@
 import http from "@/utils/http";
 import {
   IconChevronLeft,
-  IconChevronRight,
   IconCircleCheckFilled,
   IconClockFilled,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
+import AllWordOfTopic from "@/app/(app)/vocabulary/maincontent/all-word-of-topic";
 
 interface Topic {
   createdAt: string;
@@ -25,11 +25,15 @@ interface Topic {
 const AllTopicOfCollection: React.FC<{
   showTopicModal: boolean;
   selectedCollection: any | null;
-  handleCloseTopicModal: () => void;
-}> = ({ showTopicModal, selectedCollection, handleCloseTopicModal }) => {
+  handleShowTopicModal: () => void;
+}> = ({ showTopicModal, selectedCollection, handleShowTopicModal }) => {
   const [topicOfCollection, setTopicOfCollection] = useState<Topic[] | null>(
     null
   );
+
+  const [selectedTopic, setSelectedTopic] = useState<any | null>(null);
+  const [showWordModal, setShowWordModal] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -64,50 +68,59 @@ const AllTopicOfCollection: React.FC<{
     []
   );
 
-  if (!showTopicModal) return null;
+  const handleOpenTopicDetail = (topic: any) => {
+    setSelectedTopic(topic);
+    setShowWordModal(true);
+  };
+
+  const handleCloseWordModal = () => {
+    setShowWordModal(false);
+  };
 
   return (
     <div
       className={`fixed inset-0 bg-white z-50 overflow-y-auto transition-all duration-300 ease-in-out transform dark:bg-[#222222] ${
         showTopicModal
-          ? "scale-100 opacity-100 pointer-events-auto"
-          : "scale-50 opacity-0 pointer-events-none"
+          ? "opacity-100 scale-100 pointer-events-auto visible"
+          : "opacity-0 scale-50 pointer-events-none invisible"
       }`}
     >
       <div className="flex px-2.5 py-3.5 gap-5 bg-primary text-white text-base ">
         <button
-          onClick={handleCloseTopicModal}
-          className="font-bold hover:text-gray-800"
+          onClick={handleShowTopicModal}
+          className="font-bold hover:text-gray-300"
         >
           <IconChevronLeft size={30} />
         </button>
-        <div className="flex gap-3 items-center">
-          <div className="flex gap-3">
-            <Image
-              src={
-                "https://voca-land.sgp1.cdn.digitaloceanspaces.com/-1/1653745889658/92e1b62145539c2bdcd28d6b8204d77d54c7cb41269edef6d4b5b98989985091.png"
-              }
-              width={100}
-              height={100}
-              alt="folder"
-              className="w-16 h-16 rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-[5px]"
-            />
-            <div className="w-full flex flex-col justify-around items-start">
-              <p className="font-semibold text-lg">{selectedCollection.name}</p>
-              <div className="text-xs text-gray-500 flex gap-2 font-semibold bg-white px-2 py-1 rounded-full">
-                <div className="flex items-center text-[#0088E6] gap-1">
-                  <IconCircleCheckFilled width={19} height={19} />
-                  <p className="mt-0.5">
-                    {selectedCollection.numOfLearnedWord}/
-                    {selectedCollection.numOfTotalWords} đã học
-                  </p>
-                </div>
-                <div className="flex items-center text-primary gap-1">
-                  <IconClockFilled width={19} height={19} />
-                  <p className="mt-0.5">
-                    {selectedCollection.numOfLearningWord} cần luyện tập
-                  </p>
-                </div>
+        <div className="flex gap-5 items-center">
+          <Image
+            src={
+              selectedCollection?.thumbnailName ||
+              "https://voca-land.sgp1.cdn.digitaloceanspaces.com/-1/1653745889658/92e1b62145539c2bdcd28d6b8204d77d54c7cb41269edef6d4b5b98989985091.png"
+            }
+            width={100}
+            height={100}
+            alt="folder"
+            className="w-16 h-16 rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-[5px]"
+          />
+          <div className="w-full flex flex-col gap-2 items-start">
+            <p className="font-semibold ">
+              {selectedCollection?.name || "Collection Name Unavailable"}
+            </p>
+            <div className="text-xs text-gray-500 flex gap-2 font-semibold bg-white px-2 py-[5px] rounded-full">
+              <div className="flex items-center text-[#0088E6] gap-1">
+                <IconCircleCheckFilled width={19} height={19} />
+                <p className="mt-0.5 tracking-[0.1em]">
+                  {selectedCollection?.numOfLearnedWord || 0}/
+                  {selectedCollection?.numOfTotalWords || 0}
+                </p>
+                đã học
+              </div>
+              <div className="flex items-center text-primary gap-1">
+                <IconClockFilled width={19} height={19} />
+                <p className="mt-0.5">
+                  {selectedCollection?.numOfLearningWord || 0} cần luyện tập
+                </p>
               </div>
             </div>
           </div>
@@ -120,9 +133,13 @@ const AllTopicOfCollection: React.FC<{
           Error fetching data: {error}
         </div>
       ) : topicOfCollection?.length ? (
-        <div className="p-4 grid grid-cols-5 gap-1">
+        <div className="px-16 py-4 grid grid-cols-5 gap-3 container">
           {topicOfCollection.map((topic) => (
-            <div key={topic.id} className="flex flex-col items-center gap-1">
+            <button
+              key={topic.id}
+              className="flex flex-col items-center gap-1.5 hover:bg-gray-100 rounded-3xl py-14"
+              onClick={() => handleOpenTopicDetail(topic)}
+            >
               <Image
                 src={
                   topic.thumbnailName
@@ -132,30 +149,37 @@ const AllTopicOfCollection: React.FC<{
                 width={100}
                 height={100}
                 alt="folder"
-                className="w-16 h-16 rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-[5px]"
+                className="w-[75px] h-[75px] rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-[5px] mb-2"
               />
-              <h1>{topic.name}</h1>
-              <div className="text-xs text-gray-500 flex gap-2 font-semibold bg-white rounded-full">
+              <p className="text-lg">{topic.name}</p>
+              <div className="text-xs text-gray-500 flex gap-2 font-semibold rounded-full">
                 <div className="flex items-center text-[#0088E6] gap-1">
                   <IconCircleCheckFilled width={19} height={19} />
                   <p className="mt-0.5">
-                    {selectedCollection.numOfLearnedWord}/
-                    {selectedCollection.numOfTotalWords}
+                    {selectedCollection?.numOfLearnedWord || 0}/
+                    {selectedCollection?.numOfTotalWords || 0}
                   </p>
                 </div>
                 <div className="flex items-center text-primary gap-1">
                   <IconClockFilled width={19} height={19} />
                   <p className="mt-0.5">
-                    {selectedCollection.numOfLearningWord}
+                    {selectedCollection?.numOfLearningWord || 0}
                   </p>
                 </div>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       ) : (
         <div className="text-center mt-4">Chưa có chủ đề nào thuộc bộ này</div>
       )}
+
+      {/* Show Word Detail Modal */}
+      <AllWordOfTopic
+        showWordModal={showWordModal}
+        selectedTopic={selectedTopic}
+        handleCloseWordModal={handleCloseWordModal}
+      />
     </div>
   );
 };

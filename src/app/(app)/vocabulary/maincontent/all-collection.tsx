@@ -1,24 +1,41 @@
 import { IconChevronLeft } from "@tabler/icons-react";
-import React from "react";
+import React, { useState } from "react";
 import VocabularySet from "@/app/(app)/vocabulary/maincontent/vocabulary-set";
+import AllTopicOfCollection from "./all-topic-of-collection";
 
 type AllCategoriesProps = {
-  showAllCategories: boolean;
+  showAllCollection: boolean;
   groupedVocabularyData: { [categoryName: string]: any[] };
   handleSelectPinnedCollection: (folder: any) => void;
-  handleShowAllCategories: () => void;
+  handleShowAllCollection: () => void;
 };
 
-const AllCategories: React.FC<AllCategoriesProps> = ({
-  showAllCategories,
+const AllCollection: React.FC<AllCategoriesProps> = ({
+  showAllCollection,
   groupedVocabularyData,
   handleSelectPinnedCollection,
-  handleShowAllCategories,
+  handleShowAllCollection,
 }) => {
+  const [selectedCollection, setSelectedCollection] = useState<any | null>(
+    null
+  );
+  const [showTopicModal, setShowTopicModal] = useState(false);
+
+  // Hiển thị tất cả topic của collection
+  const handleOpenCollectionDetail = (collection: any) => {
+    setSelectedCollection(collection);
+    setShowTopicModal(true);
+  };
+
+  const handleShowTopicModal = () => {
+    setShowTopicModal(false);
+    setSelectedCollection(null);
+  };
+
   return (
     <div
       className={`fixed inset-0 bg-white z-50 overflow-y-auto transition-all duration-300 ease-in-out transform dark:bg-[#222222] scrollbar-hide ${
-        showAllCategories
+        showAllCollection
           ? "scale-100 opacity-100 pointer-events-auto"
           : "scale-50 opacity-0 pointer-events-none"
       }`}
@@ -26,8 +43,8 @@ const AllCategories: React.FC<AllCategoriesProps> = ({
       <div className="flex flex-col bg-primary text-white text-base">
         <div className="flex px-5 pt-5 gap-3 items-center">
           <button
-            onClick={handleShowAllCategories}
-            className="font-bold hover:text-gray-800"
+            onClick={handleShowAllCollection}
+            className="font-bold hover:text-gray-300"
           >
             <IconChevronLeft size={30} />
           </button>
@@ -54,7 +71,11 @@ const AllCategories: React.FC<AllCategoriesProps> = ({
               <div className="flex flex-wrap gap-6 pl-4">
                 {groupedVocabularyData[categoryName].map((vocabulary) => (
                   <button
-                    onClick={() => handleSelectPinnedCollection(vocabulary)}
+                    onClick={() =>
+                      showTopicModal
+                        ? handleOpenCollectionDetail(vocabulary)
+                        : handleSelectPinnedCollection(vocabulary)
+                    }
                   >
                     <VocabularySet
                       key={vocabulary.id}
@@ -75,8 +96,15 @@ const AllCategories: React.FC<AllCategoriesProps> = ({
           <p>Không có dữ liệu để hiển thị</p>
         )}
       </div>
+
+      {/* Show Topic Modal */}
+      <AllTopicOfCollection
+        showTopicModal={showTopicModal}
+        selectedCollection={selectedCollection}
+        handleShowTopicModal={handleShowTopicModal}
+      />
     </div>
   );
 };
 
-export default AllCategories;
+export default AllCollection;

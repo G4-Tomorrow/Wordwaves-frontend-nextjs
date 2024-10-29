@@ -25,8 +25,8 @@ interface Topic {
 const AllTopicOfCollection: React.FC<{
   showTopicModal: boolean;
   selectedCollection: any | null;
-  handleShowTopicModal: () => void;
-}> = ({ showTopicModal, selectedCollection, handleShowTopicModal }) => {
+  handleCloseTopicModal: () => void;
+}> = ({ showTopicModal, selectedCollection, handleCloseTopicModal }) => {
   const [topicOfCollection, setTopicOfCollection] = useState<Topic[] | null>(
     null
   );
@@ -68,7 +68,7 @@ const AllTopicOfCollection: React.FC<{
     []
   );
 
-  const handleOpenTopicDetail = (topic: any) => {
+  const handleOpenTopicDetail = (topic: Topic) => {
     setSelectedTopic(topic);
     setShowWordModal(true);
   };
@@ -79,15 +79,15 @@ const AllTopicOfCollection: React.FC<{
 
   return (
     <div
-      className={`fixed inset-0 bg-white z-50 overflow-y-auto transition-all duration-300 ease-in-out transform dark:bg-[#222222] ${
+      className={`fixed inset-0 bg-white z-100 overflow-y-auto transition-all duration-300 ease-in-out transform dark:bg-[#222222] ${
         showTopicModal
           ? "opacity-100 scale-100 pointer-events-auto visible"
           : "opacity-0 scale-50 pointer-events-none invisible"
       }`}
     >
-      <div className="flex px-2.5 py-3.5 gap-5 bg-primary text-white text-base ">
+      <div className="flex px-2.5 py-3.5 gap-5 bg-primary text-white">
         <button
-          onClick={handleShowTopicModal}
+          onClick={handleCloseTopicModal}
           className="font-bold hover:text-gray-300"
         >
           <IconChevronLeft size={30} />
@@ -178,7 +178,7 @@ const AllTopicOfCollection: React.FC<{
       <AllWordOfTopic
         showWordModal={showWordModal}
         selectedTopic={selectedTopic}
-        handleCloseWordModal={handleCloseWordModal}
+        onCloseWordModal={handleCloseWordModal}
       />
     </div>
   );

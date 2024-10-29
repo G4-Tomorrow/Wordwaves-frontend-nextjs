@@ -44,14 +44,13 @@ const WordDetailModal: React.FC<WordDetailModalProps> = ({ word, onClose }) => {
     window.speechSynthesis.speak(utterance);
   };
 
-  // Automatically speak the word when the modal opens
   useEffect(() => {
     speakWord(word.name);
   }, [word.name]);
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 ">
-      <div className="bg-white dark:bg-[#222222] rounded-lg shadow-lg max-w-4xl w-full p-4 relative scrollbar-hide">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
+      <div className="bg-white dark:bg-[#222222] rounded-lg shadow-lg max-w-4xl w-full p-4 relative">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center">

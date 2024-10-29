@@ -14,7 +14,7 @@ import {
   IconPlant,
 } from "@tabler/icons-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import AllTopicOfCollection from "./all-topic-of-collection";
+import AllTopicOfCollection from "@/app/(app)/vocabulary/maincontent/all-topic-of-collection";
 import AllCollection from "@/app/(app)/vocabulary/maincontent/all-collection";
 
 const MainContent: React.FC = () => {
@@ -56,8 +56,8 @@ const MainContent: React.FC = () => {
   const getCollectionData = useCallback(
     async (token: string, userId?: string) => {
       const url = userId
-        ? `/collections?pageNumber=1&pageSize=5&userId=${userId}`
-        : `/collections?pageNumber=1&pageSize=5`;
+        ? `/collections?pageNumber=1&pageSize=20&userId=${userId}`
+        : `/collections?pageNumber=1&pageSize=20`;
       try {
         const response = await http.get<{
           code: number;
@@ -89,8 +89,8 @@ const MainContent: React.FC = () => {
 
   const handleOpenCollectionDetail = (collection: any) => {
     setSelectedCollection(collection);
-    setShowTopicModal(true);
     setShowAllCollection(false);
+    setShowTopicModal(true);
   };
 
   const handleOpenCollectionFromPinned = (collection: any) => {
@@ -257,6 +257,8 @@ const MainContent: React.FC = () => {
       {/* Show All Collection Modal */}
       <AllCollection
         showAllCollection={showAllCollection}
+        showTopicModal={showTopicModal}
+        handleOpenCollectionDetail={handleOpenCollectionDetail}
         groupedVocabularyData={groupedCollectionData}
         handleSelectPinnedCollection={handleSelectPinnedCollection}
         handleShowAllCollection={handleShowAllCollection}
@@ -266,7 +268,7 @@ const MainContent: React.FC = () => {
       <AllTopicOfCollection
         showTopicModal={showTopicModal}
         selectedCollection={selectedCollection}
-        handleShowTopicModal={closeTopicModal}
+        handleCloseTopicModal={closeTopicModal}
       />
     </div>
   );

@@ -1,10 +1,11 @@
 import { IconChevronLeft } from "@tabler/icons-react";
 import React, { useState } from "react";
 import VocabularySet from "@/app/(app)/vocabulary/maincontent/vocabulary-set";
-import AllTopicOfCollection from "./all-topic-of-collection";
 
 type AllCategoriesProps = {
   showAllCollection: boolean;
+  showTopicModal: boolean;
+  handleOpenCollectionDetail: (collection: any) => void;
   groupedVocabularyData: { [categoryName: string]: any[] };
   handleSelectPinnedCollection: (folder: any) => void;
   handleShowAllCollection: () => void;
@@ -12,26 +13,12 @@ type AllCategoriesProps = {
 
 const AllCollection: React.FC<AllCategoriesProps> = ({
   showAllCollection,
+  showTopicModal,
+  handleOpenCollectionDetail,
   groupedVocabularyData,
   handleSelectPinnedCollection,
   handleShowAllCollection,
 }) => {
-  const [selectedCollection, setSelectedCollection] = useState<any | null>(
-    null
-  );
-  const [showTopicModal, setShowTopicModal] = useState(false);
-
-  // Hiển thị tất cả topic của collection
-  const handleOpenCollectionDetail = (collection: any) => {
-    setSelectedCollection(collection);
-    setShowTopicModal(true);
-  };
-
-  const handleShowTopicModal = () => {
-    setShowTopicModal(false);
-    setSelectedCollection(null);
-  };
-
   return (
     <div
       className={`fixed inset-0 bg-white z-50 overflow-y-auto transition-all duration-300 ease-in-out transform dark:bg-[#222222] scrollbar-hide ${
@@ -57,7 +44,7 @@ const AllCollection: React.FC<AllCategoriesProps> = ({
         </p>
       </div>
 
-      <div className="px-16 py-10">
+      <div className="px-16 py-6">
         {groupedVocabularyData &&
         Object.keys(groupedVocabularyData).length > 0 ? (
           Object.keys(groupedVocabularyData).map((categoryName) => (
@@ -96,13 +83,6 @@ const AllCollection: React.FC<AllCategoriesProps> = ({
           <p>Không có dữ liệu để hiển thị</p>
         )}
       </div>
-
-      {/* Show Topic Modal */}
-      <AllTopicOfCollection
-        showTopicModal={showTopicModal}
-        selectedCollection={selectedCollection}
-        handleShowTopicModal={handleShowTopicModal}
-      />
     </div>
   );
 };

@@ -9,7 +9,8 @@ import {
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import WordDetailModal from "@/app/(app)/vocabulary/maincontent/word-detail";
-import AddWordForm from "@/app/(app)/vocabulary/maincontent/add-word-form";
+import AddWordForm from "@/app/(app)/vocabulary/maincontent/addform/add-word-form";
+import { Button } from "antd";
 
 interface Word {
   id: string;
@@ -26,14 +27,15 @@ interface Word {
 const AllWordOfTopic: React.FC<{
   showWordModal: boolean;
   selectedTopic: any | null;
-  handleCloseWordModal: () => void;
-}> = ({ showWordModal, selectedTopic, handleCloseWordModal }) => {
+  onCloseWordModal: () => void;
+}> = ({ showWordModal, selectedTopic, onCloseWordModal }) => {
   const [words, setWords] = useState<Word[]>([]);
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showAddWordModal, setShowAddWordModal] = useState(false);
 
+  const [showAddWordModal, setShowAddWordModal] = useState(false);
   useEffect(() => {
     if (!selectedTopic) return;
     const token = localStorage.getItem("accessToken");
@@ -92,16 +94,16 @@ const AllWordOfTopic: React.FC<{
 
   return (
     <div
-      className={`fixed inset-0 bg-white z-50 overflow-y-auto overflow-hidden transition-all duration-300 ease-in-out transform dark:bg-[#222222] scrollbar-hide ${
+      className={`fixed inset-0 bg-white z-50 overflow-y-auto transition-all duration-300 ease-in-out transform dark:bg-[#222222] scrollbar-hide ${
         showWordModal
           ? "scale-100 opacity-100 pointer-events-auto"
           : "scale-50 opacity-0 pointer-events-none"
       }`}
     >
       {/* Header */}
-      <div className="flex items-center px-2.5 py-3.5 gap-5 bg-primary text-white shadow-lg">
+      <div className="relative flex items-center px-2.5 py-3.5 gap-5 bg-primary text-white shadow-lg">
         <button
-          onClick={handleCloseWordModal}
+          onClick={onCloseWordModal}
           className="hover:text-gray-300 transition duration-150"
         >
           <IconChevronLeft size={30} />
@@ -118,7 +120,7 @@ const AllWordOfTopic: React.FC<{
             className="w-16 h-16 rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-[5px]"
           />
           <div className="w-full flex flex-col gap-2 items-start">
-            <p className="font-medium">
+            <p className="font-semibold">
               {selectedTopic?.name || "Collection Name Unavailable"}
             </p>
             <div className="text-xs text-gray-500 flex gap-2 font-semibold bg-white px-2 py-[5px] rounded-full">
@@ -139,27 +141,24 @@ const AllWordOfTopic: React.FC<{
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Button to open Add Word Modal */}
-      <div className="flex justify-end px-16 py-4">
-        <button
-          onClick={handleShowAddWordModal}
-          className="bg-primary text-white px-4 py-2 rounded-lg"
-        >
-          Add New Word
-        </button>
+        {/* Button to open Add Word Modal */}
+        <div className="absolute top-[50%] right-10 translate-y-[-50%]">
+          <Button
+            onClick={handleShowAddWordModal}
+            className="bg-primary text-white !p-5 rounded-lg hover:!text-[#16a34a] transition-transform transform hover:scale-125"
+          >
+            Add New Word
+          </Button>
+        </div>
       </div>
 
       {/* Add Word Modal */}
       {selectedTopic && showAddWordModal && (
-        <div className="absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
-          <AddWordForm
-            topicId={selectedTopic.id}
-            onWordAdded={handleWordAdded}
-            handleShowAddWordModal={handleShowAddWordModal}
-          />
-        </div>
+        <AddWordForm
+          topicId={selectedTopic.id}
+          onWordAdded={handleWordAdded}
+          onCloseAddWordModal={handleShowAddWordModal}
+        />
       )}
 
       {/* Content */}
@@ -173,8 +172,13 @@ const AllWordOfTopic: React.FC<{
         <div className="text-center mt-8 text-red-500">
           Error fetching data: {error}
         </div>
+      ) : // nếu topic không có từ vựng nào
+      words.length === 0 ? (
+        <div className="text-center mt-8 text-gray-500">
+          Chủ đề này chưa có từ vựng nào!
+        </div>
       ) : (
-        <div className="grid lg:grid-cols-3 gap-9 px-14 py-10 ">
+        <div className="grid lg:grid-cols-3 gap-9 px-14 py-10 ny">
           {words.map((word) => (
             <div
               key={word.id}
@@ -191,9 +195,9 @@ const AllWordOfTopic: React.FC<{
                 className="w-12 h-12 rounded-full border-[5px] border-[#A5E3BB] bg-white p-[5px] mr-3"
               />
               <div>
-                <h2 className="font-medium text-primary dark:text-white">
+                <p className="font-medium text-primary dark:text-white">
                   {word.name}
-                </h2>
+                </p>
                 {word.meanings.slice(0, 1).map((meaning) => (
                   <p
                     key={meaning.partOfSpeech}

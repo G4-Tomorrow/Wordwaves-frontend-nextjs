@@ -8,6 +8,8 @@ import {
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import AllWordOfTopic from "@/app/(app)/vocabulary/maincontent/all-word-of-topic";
+import { Button, Skeleton } from "antd";
+import AddTopicForm from "@/app/(app)/vocabulary/maincontent/addform/add-topic-form";
 
 interface Topic {
   createdAt: string;
@@ -36,6 +38,8 @@ const AllTopicOfCollection: React.FC<{
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [showAddTopicModal, setShowAddTopicModal] = useState(false);
 
   useEffect(() => {
     if (!selectedCollection) return;
@@ -77,6 +81,20 @@ const AllTopicOfCollection: React.FC<{
     setShowWordModal(false);
   };
 
+  const handleTopicAdded = () => {
+    if (selectedCollection) {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        fetchCollectionTopics(token, selectedCollection.id);
+      }
+    }
+    setShowAddTopicModal(false);
+  };
+
+  const handleShowAddTopicModal = () => {
+    setShowAddTopicModal((prev) => !prev);
+  };
+
   return (
     <div
       className={`fixed inset-0 bg-white z-100 overflow-y-auto transition-all duration-300 ease-in-out transform dark:bg-[#222222] ${
@@ -85,7 +103,7 @@ const AllTopicOfCollection: React.FC<{
           : "opacity-0 scale-50 pointer-events-none invisible"
       }`}
     >
-      <div className="flex px-2.5 py-3.5 gap-5 bg-primary text-white">
+      <div className="relative flex px-2.5 py-3.5 gap-5 bg-primary text-white">
         <button
           onClick={handleCloseTopicModal}
           className="font-bold hover:text-gray-300"
@@ -125,9 +143,62 @@ const AllTopicOfCollection: React.FC<{
             </div>
           </div>
         </div>
+        {/* Button to open Add Topic Modal */}
+        <div className="absolute top-[50%] right-10 translate-y-[-50%]">
+          <Button
+            onClick={handleShowAddTopicModal}
+            className="bg-primary text-white !p-5 rounded-lg hover:!text-[#16a34a] transition-transform transform hover:scale-125"
+          >
+            Add New Topic
+          </Button>
+        </div>
       </div>
+
+      {/* Add Topic Modal */}
+      {selectedCollection && showAddTopicModal && (
+        <AddTopicForm
+          collectionId={selectedCollection?.id}
+          onTopicAdded={handleTopicAdded}
+          onCloseAddTopicModal={handleShowAddTopicModal}
+        />
+      )}
+
       {loading ? (
-        <div className="text-center mt-4">Loading...</div>
+        <div className="grid lg:grid-cols-5 gap-3 px-16 py-4">
+          {[...Array(5)].map((_, index) => (
+            <div
+              key={index}
+              className="flex flex-col items-center gap-1.5 py-14"
+            >
+              {/* Skeleton for image */}
+              <Skeleton.Avatar
+                active
+                shape="circle"
+                size={75}
+                className="border-[7.5px] border-[#A5E3BB] bg-white p-[5px] mb-2"
+              />
+              {/* Skeleton for title */}
+              <Skeleton.Input
+                active
+                style={{ width: "60%", height: "20px" }}
+                className="rounded-full"
+              />
+              {/* Skeleton for progress indicators */}
+              <div className="flex gap-2 text-xs font-semibold rounded-full mt-1">
+                <Skeleton.Input
+                  active
+                  style={{ width: "35px", height: "15px" }}
+                  className="rounded-full"
+                />
+                <Skeleton.Input
+                  active
+                  style={{ width: "35px", height: "15px" }}
+                  className="rounded-full"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
       ) : error ? (
         <div className="text-center mt-4 text-red-500">
           Error fetching data: {error}
@@ -142,9 +213,8 @@ const AllTopicOfCollection: React.FC<{
             >
               <Image
                 src={
-                  topic.thumbnailName
-                    ? `https://voca-land.sgp1.cdn.digitaloceanspaces.com/${topic.createdById}/${topic.id}/${topic.thumbnailName}`
-                    : "https://voca-land.sgp1.cdn.digitaloceanspaces.com/-1/1653745889658/92e1b62145539c2bdcd28d6b8204d77d54c7cb41269edef6d4b5b98989985091.png"
+                  topic.thumbnailName ||
+                  "https://voca-land.sgp1.cdn.digitaloceanspaces.com/-1/1653745889658/92e1b62145539c2bdcd28d6b8204d77d54c7cb41269edef6d4b5b98989985091.png"
                 }
                 width={100}
                 height={100}

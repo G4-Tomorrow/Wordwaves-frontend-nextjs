@@ -5,8 +5,8 @@ import { useState } from "react";
 const AddWordForm: React.FC<{
   topicId: string;
   onWordAdded: () => void;
-  handleShowAddWordModal: () => void;
-}> = ({ topicId, onWordAdded, handleShowAddWordModal }) => {
+  onCloseAddWordModal: () => void;
+}> = ({ topicId, onWordAdded, onCloseAddWordModal }) => {
   const [wordName, setWordName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,30 +29,40 @@ const AddWordForm: React.FC<{
       if (response.data.code === 1000) {
         onWordAdded();
         setWordName("");
+        alert("Thêm từ thành công!");
       } else {
         throw new Error(response.data.message);
       }
     } catch (err: any) {
-      setError(err.message);
+      setError(err.response.data.message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onCloseAddWordModal();
+    }
+  };
+
   return (
-    <div>
+    <div
+      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm z-50"
+      onClick={handleOverlayClick}
+    >
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-[#333] p-4 rounded-lg shadow-md mb-6"
+        className="relative w-1/3 bg-white dark:bg-[#333] p-4 rounded-lg shadow-md mb-6"
       >
-        <h3 className="text-lg font-semibold text-primary dark:text-white mb-4">
+        <h3 className="text-lg font-semibold text-primary dark:text-white mb-4 text-center">
           Thêm Từ Mới
         </h3>
         <button
-          onClick={handleShowAddWordModal}
-          className="absolute top-2 right-2 text-gray-500 dark:text-gray-400"
+          onClick={onCloseAddWordModal}
+          className="absolute top-3 right-4 text-gray-500 dark:text-gray-400 hover:rotate-180 transition-transform ease-in-out duration-300"
         >
-          <IconX size={20} />
+          <IconX size={22} />
         </button>
         <div className="mb-4">
           <label
@@ -61,12 +71,14 @@ const AddWordForm: React.FC<{
           >
             Tên Từ
           </label>
+
           <input
             type="text"
             id="wordName"
             value={wordName}
             onChange={(e) => setWordName(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded-lg dark:bg-[#444] dark:border-gray-600 dark:text-white"
+            className="w-full px-2 py-1 border-b-2 border-primary dark:border-white focus:outline-none focus:border-primary dark:focus:border-white"
+            required
           />
         </div>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}

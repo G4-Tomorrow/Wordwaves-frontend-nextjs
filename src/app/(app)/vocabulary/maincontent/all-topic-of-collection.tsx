@@ -174,8 +174,8 @@ const AllTopicOfCollection: React.FC<{
               <Skeleton.Avatar
                 active
                 shape="circle"
-                size={75}
-                className="border-[7.5px] border-[#A5E3BB] bg-white p-[5px] mb-2"
+                size={55}
+                className="border-[7.5px] border-[#A5E3BB] bg-white p-[5px] mb-2 rounded-full"
               />
               {/* Skeleton for title */}
               <Skeleton.Input

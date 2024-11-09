@@ -5,7 +5,7 @@ import {
   IconVolume2,
 } from "@tabler/icons-react";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 
 interface Phonetic {
   text: string;
@@ -38,18 +38,30 @@ interface WordDetailModalProps {
 // Description: Shows detailed information about a selected word, including phonetics, meanings, and examples. Allows users to listen to the pronunciation and mark as known.
 const WordDetailModal: React.FC<WordDetailModalProps> = ({ word, onClose }) => {
   // Function to speak the word
+  const [speakCount, setSpeakCount] = useState(0);
+
+  // Function to speak the word
   const speakWord = (text: string) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US";
-    window.speechSynthesis.speak(utterance);
+    if (speakCount < 2) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      window.speechSynthesis.speak(utterance);
+      setSpeakCount((prev) => prev + 1);
+    }
   };
 
   useEffect(() => {
     speakWord(word.name);
   }, [word.name]);
-
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
+    <div
+      className="sticky inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50 h-screen"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="bg-white dark:bg-[#222222] rounded-lg shadow-lg max-w-4xl w-full p-4 relative">
         {/* Header */}
         <div className="flex items-center justify-between">

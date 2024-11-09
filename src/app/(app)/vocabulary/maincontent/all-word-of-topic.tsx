@@ -7,7 +7,7 @@ import {
   IconClockFilled,
 } from "@tabler/icons-react";
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 import WordDetailModal from "@/app/(app)/vocabulary/maincontent/word-detail";
 import AddWordForm from "@/app/(app)/vocabulary/maincontent/addform/add-word-form";
 import { Button } from "antd";
@@ -99,6 +99,7 @@ const AllWordOfTopic: React.FC<{
           ? "scale-100 opacity-100 pointer-events-auto"
           : "scale-50 opacity-0 pointer-events-none"
       }`}
+      // style={{ overflowY: selectedWord ? "hidden" : "auto" }}
     >
       {/* Header */}
       <div className="relative flex items-center px-2.5 py-3.5 gap-5 bg-primary text-white shadow-lg">

@@ -40,16 +40,14 @@ const AddWordForm: React.FC<{
     }
   };
 
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onCloseAddWordModal();
-    }
-  };
-
   return (
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm z-50"
-      onClick={handleOverlayClick}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onCloseAddWordModal();
+        }
+      }}
     >
       <form
         onSubmit={handleSubmit}

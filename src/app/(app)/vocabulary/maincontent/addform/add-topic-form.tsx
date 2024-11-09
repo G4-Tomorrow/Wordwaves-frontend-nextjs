@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import http from "@/utils/http"; // Đảm bảo rằng bạn đã thiết lập module `http` để gọi API
+import http from "@/utils/http"; // Ensure `http` module is set up for API calls
 
 const AddTopicForm: React.FC<{
   collectionId: string;
@@ -7,33 +7,43 @@ const AddTopicForm: React.FC<{
   onCloseAddTopicModal: () => void;
 }> = ({ collectionId, onTopicAdded, onCloseAddTopicModal }) => {
   const [name, setName] = useState("");
-  const [thumbnailName, setThumbnailName] = useState("");
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setThumbnail(e.target.files[0]);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("collectionId", collectionId);
+    if (thumbnail) formData.append("thumbnail", thumbnail);
+
     try {
       const token = localStorage.getItem("accessToken");
-      const response = await http.post(
-        `/topics`,
-        { name, collectionId, thumbnailName },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await http.post(`/topics`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       if (response.data.code === 1000) {
         alert("Chủ đề đã được thêm thành công!");
         onTopicAdded();
         setName("");
-        setThumbnailName("");
+        setThumbnail(null);
       } else {
         alert(response.data.message || "Có lỗi xảy ra khi thêm chủ đề!");
       }
     } catch (error: any) {
-      //   .error("Không thể thêm chủ đề. Vui lòng thử lại!");
+      console.error("Không thể thêm chủ đề. Vui lòng thử lại!", error);
     } finally {
       setIsSubmitting(false);
       onCloseAddTopicModal();
@@ -63,7 +73,7 @@ const AddTopicForm: React.FC<{
           <i className="fas fa-times"></i>
         </button>
 
-        {/* Trường nhập Tên Chủ Đề */}
+        {/* Topic Name Field */}
         <div className="mb-4">
           <label
             htmlFor="topic-name"
@@ -81,19 +91,19 @@ const AddTopicForm: React.FC<{
           />
         </div>
 
-        {/* Trường nhập Tên Hình Ảnh */}
+        {/* Image Upload Field */}
         <div className="mb-4">
           <label
-            htmlFor="thumbnail-name"
+            htmlFor="thumbnail"
             className="block text-primary dark:text-white"
           >
-            Tên Hình Ảnh
+            Tải lên Hình Ảnh
           </label>
           <input
-            type="text"
-            id="thumbnail-name"
-            value={thumbnailName}
-            onChange={(e) => setThumbnailName(e.target.value)}
+            type="file"
+            id="thumbnail"
+            accept="image/*"
+            onChange={handleFileChange}
             className="w-full px-2 py-1 border-b-2 border-primary dark:border-white focus:outline-none focus:border-primary dark:focus:border-white"
             required
           />

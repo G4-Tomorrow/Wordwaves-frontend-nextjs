@@ -43,7 +43,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
                 },
             });
             setUser(null);
-            localStorage.removeItem('token');
+            localStorage.removeItem('accessToken');
             router.push('/sign-in');
         } catch (err) {
             console.error('Error during logout:', err);

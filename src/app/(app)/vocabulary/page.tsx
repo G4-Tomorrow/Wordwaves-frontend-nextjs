@@ -1,5 +1,5 @@
-import SearchBar from "@/app/(app)/vocabulary/searchbar/searchbar";
-import MainContent from "@/app/(app)/vocabulary/maincontent/maincontent";
+import MainContent from "@/components/vocabulary/maincontent/maincontent";
+import SearchBar from "@/components/vocabulary/searchbar/searchbar";
 
 export default function Vocabulary() {
   return (

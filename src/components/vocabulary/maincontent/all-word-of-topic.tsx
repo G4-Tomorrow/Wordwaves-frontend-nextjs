@@ -8,10 +8,10 @@ import {
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { useCallback, useContext, useEffect, useState } from "react";
-import WordDetailModal from "@/app/(app)/vocabulary/maincontent/word-detail";
-import AddWordForm from "@/app/(app)/vocabulary/maincontent/addform/add-word-form";
 import { Button } from "antd";
 import { AuthContext } from "@/context/AuthContext";
+import AddWordForm from "@/components/vocabulary/maincontent/addform/add-word-form";
+import WordDetailModal from "@/components/vocabulary/maincontent/word-detail";
 interface Word {
   id: string;
   name: string;

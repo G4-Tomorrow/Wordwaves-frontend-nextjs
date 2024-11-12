@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import SearchResults from "@/app/(app)/vocabulary/searchbar/search-result";
 import { IconChevronLeft, IconX, IconZoom } from "@tabler/icons-react";
+import SearchResults from "./search-result";
 
 const SearchBar = () => {
   const [showOverlay, setShowOverlay] = useState<boolean>(false);

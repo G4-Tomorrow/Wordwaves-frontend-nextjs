@@ -1,7 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback, useContext } from "react";
-import VocabularySetsList from "@/app/(app)/vocabulary/maincontent/vocabulary-setslist";
 import { AuthContext } from "@/context/AuthContext";
 import http from "@/utils/http";
 import Image from "next/image";
@@ -14,8 +13,9 @@ import {
   IconPlant,
 } from "@tabler/icons-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import AllTopicOfCollection from "@/app/(app)/vocabulary/maincontent/all-topic-of-collection";
-import AllCollection from "@/app/(app)/vocabulary/maincontent/all-collection";
+import VocabularySetsList from "@/components/vocabulary/maincontent/vocabulary-setslist";
+import AllCollection from "@/components/vocabulary/maincontent/all-collection";
+import AllTopicOfCollection from "@/components/vocabulary/maincontent/all-topic-of-collection";
 
 const MainContent: React.FC = () => {
   const [showAllCollection, setShowAllCollection] = useState(false);

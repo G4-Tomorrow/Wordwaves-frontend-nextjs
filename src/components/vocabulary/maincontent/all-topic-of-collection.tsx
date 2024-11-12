@@ -7,10 +7,10 @@ import {
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { useCallback, useContext, useEffect, useState } from "react";
-import AllWordOfTopic from "@/app/(app)/vocabulary/maincontent/all-word-of-topic";
 import { Button, Skeleton } from "antd";
-import AddTopicForm from "@/app/(app)/vocabulary/maincontent/addform/add-topic-form";
 import { AuthContext } from "@/context/AuthContext";
+import AddTopicForm from "@/components/vocabulary/maincontent/addform/add-topic-form";
+import AllWordOfTopic from "@/components/vocabulary/maincontent/all-word-of-topic";
 
 interface Topic {
   createdAt: string;

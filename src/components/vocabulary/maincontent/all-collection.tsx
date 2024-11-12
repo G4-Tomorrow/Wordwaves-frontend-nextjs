@@ -1,10 +1,10 @@
 "use client";
 import { IconChevronLeft } from "@tabler/icons-react";
 import React, { useState, useContext } from "react";
-import VocabularySet from "@/app/(app)/vocabulary/maincontent/vocabulary-set";
 import { Button } from "antd";
-import AddCollectionForm from "./addform/add-collection-form";
 import { AuthContext } from "@/context/AuthContext";
+import AddCollectionForm from "@/components/vocabulary/maincontent/addform/add-collection-form";
+import VocabularySet from "@/components/vocabulary/maincontent/vocabulary-set";
 
 type AllCategoriesProps = {
   showAllCollection: boolean;

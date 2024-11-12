@@ -113,7 +113,7 @@ export const LogoIcon = () => {
       href="/"
       className=" text-center font-extrabold text-xl  select-none text-primary"
     >
-      <span className="block">WordWaves</span>
+      <span className="block">WordWares</span>
     </Link>
   );
 };

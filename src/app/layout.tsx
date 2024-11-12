@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Badge } from "@/components/ui/badge";
 import SidebarApp from "@/app/(app)/sidebar-app";
 import { AuthContextProvider } from "@/context/AuthContext";
-import { Toaster } from "@/components/ui/toaster";
 
 import { Poppins } from '@next/font/google';
 
@@ -41,10 +40,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.className} antialiased `}
       >
-        {/* <AuthContextProvider> */}
-        <Toaster />
-        {children}
-        {/* </AuthContextProvider> */}
+        <AuthContextProvider>
+          {children}
+        </AuthContextProvider>
+    
+       
+       
       </body>
     </html>
   );

@@ -1,24 +1,54 @@
+"use client";
 import { IconChevronLeft } from "@tabler/icons-react";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import VocabularySet from "@/app/(app)/vocabulary/maincontent/vocabulary-set";
+import { Button } from "antd";
+import AddCollectionForm from "./addform/add-collection-form";
+import { AuthContext } from "@/context/AuthContext";
 
 type AllCategoriesProps = {
   showAllCollection: boolean;
   showTopicModal: boolean;
-  handleOpenCollectionDetail: (collection: any) => void;
+  onOpenCollectionDetail: (collection: any) => void;
   groupedVocabularyData: { [categoryName: string]: any[] };
-  handleSelectPinnedCollection: (folder: any) => void;
-  handleShowAllCollection: () => void;
+  onSelectPinnedCollection: (folder: any) => void;
+  onShowAllCollection: () => void;
+  onSetCollectionData: (collection: any) => void;
 };
 
 const AllCollection: React.FC<AllCategoriesProps> = ({
   showAllCollection,
   showTopicModal,
-  handleOpenCollectionDetail,
+  onOpenCollectionDetail,
   groupedVocabularyData,
-  handleSelectPinnedCollection,
-  handleShowAllCollection,
+  onSelectPinnedCollection,
+  onShowAllCollection,
+  onSetCollectionData,
 }) => {
+  const [showAddCollectionModal, setShowAddCollectionModal] = useState(false);
+  const authContext = useContext(AuthContext);
+  const isAdmin = authContext?.isAdmin;
+  // sau khi thêm collection thì cập nhật lại dữ liệu ở localstorage và re-render
+  const handleCollectionAdded = (newCollection: any) => {
+    const currentCollections = JSON.parse(
+      localStorage.getItem("collectionsData") || "[]"
+    );
+
+    // Thêm bộ sưu tập mới vào mảng hiện tại
+    currentCollections.push(newCollection);
+
+    // Lưu mảng bộ sưu tập đã cập nhật vào localStorage
+    localStorage.setItem("collectionsData", JSON.stringify(currentCollections));
+
+    onSetCollectionData(currentCollections);
+    // Đóng modal
+    setShowAddCollectionModal(false);
+  };
+
+  const handleShowAddCollectionModal = () => {
+    setShowAddCollectionModal((prev) => !prev);
+  };
+
   return (
     <div
       className={`fixed inset-0 bg-white z-50 overflow-y-auto transition-all duration-300 ease-in-out transform dark:bg-[#222222] scrollbar-hide ${
@@ -27,10 +57,10 @@ const AllCollection: React.FC<AllCategoriesProps> = ({
           : "scale-50 opacity-0 pointer-events-none"
       }`}
     >
-      <div className="flex flex-col bg-primary text-white text-base">
+      <div className="flex flex-col bg-primary text-white text-base relative">
         <div className="flex px-5 pt-5 gap-3 items-center">
           <button
-            onClick={handleShowAllCollection}
+            onClick={onShowAllCollection}
             className="font-bold hover:text-gray-300"
           >
             <IconChevronLeft size={30} />
@@ -38,11 +68,29 @@ const AllCollection: React.FC<AllCategoriesProps> = ({
           <h1 className="font-bold">Bộ từ vựng được biên soạn</h1>
         </div>
         <p className="p-3 ml-1">
-          Lingoland đồng bộ việc học theo "từ", ví dụ khi bạn học từ "land" ở
+          WordWaves đồng bộ việc học theo "từ", ví dụ khi bạn học từ "land" ở
           thư mục A thì các thư mục khác chứa từ "land" cũng sẽ được cập nhật
           trạng thái học tương ứng.
         </p>
+
+        {isAdmin && (
+          <div className="absolute top-[50%] right-10 translate-y-[-50%]">
+            <Button
+              onClick={handleShowAddCollectionModal}
+              className="bg-primary text-white !p-5 rounded-lg hover:!text-[#16a34a] "
+            >
+              Thêm bộ sưu tập
+            </Button>
+          </div>
+        )}
       </div>
+
+      {isAdmin && showAddCollectionModal && (
+        <AddCollectionForm
+          onCollectionAdded={handleCollectionAdded}
+          onCloseAddCollectionModal={handleShowAddCollectionModal}
+        />
+      )}
 
       <div className="px-16 py-6">
         {groupedVocabularyData &&
@@ -60,8 +108,8 @@ const AllCollection: React.FC<AllCategoriesProps> = ({
                   <button
                     onClick={() =>
                       showTopicModal
-                        ? handleOpenCollectionDetail(vocabulary)
-                        : handleSelectPinnedCollection(vocabulary)
+                        ? onOpenCollectionDetail(vocabulary)
+                        : onSelectPinnedCollection(vocabulary)
                     }
                   >
                     <VocabularySet

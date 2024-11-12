@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Badge } from "@/components/ui/badge";
 import SidebarApp from "@/app/(app)/sidebar-app";
 import { AuthContextProvider } from "@/context/AuthContext";
+import { Toaster } from "@/components/ui/toaster";
 
 import { Poppins } from '@next/font/google';
 

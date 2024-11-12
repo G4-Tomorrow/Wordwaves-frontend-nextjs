@@ -50,7 +50,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
         },
       });
       setUser(null);
-      localStorage.removeItem("token");
+      localStorage.removeItem("accessToken");
       localStorage.removeItem("collectionsData");
       localStorage.removeItem("pinnedFolders");
       router.push("/sign-in");

@@ -2,13 +2,7 @@
 
 import http from "@/utils/http";
 import { useRouter } from "next/navigation";
-import React, {
-  createContext,
-  use,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 export interface User {
   id: string;
   email: string;
@@ -21,6 +15,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   error: string | null;
+  isAdmin: boolean;
   logout: () => void;
 }
 
@@ -108,6 +103,8 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const isAdmin = user?.roles.some((role) => role.name === "ADMIN") || false;
+
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
 
@@ -125,7 +122,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, logout }}>
+    <AuthContext.Provider value={{ user, loading, error, isAdmin, logout }}>
       {children}
     </AuthContext.Provider>
   );

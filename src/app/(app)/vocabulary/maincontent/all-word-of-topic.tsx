@@ -7,11 +7,11 @@ import {
   IconClockFilled,
 } from "@tabler/icons-react";
 import Image from "next/image";
-import { use, useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import WordDetailModal from "@/app/(app)/vocabulary/maincontent/word-detail";
 import AddWordForm from "@/app/(app)/vocabulary/maincontent/addform/add-word-form";
 import { Button } from "antd";
-
+import { AuthContext } from "@/context/AuthContext";
 interface Word {
   id: string;
   name: string;
@@ -29,6 +29,9 @@ const AllWordOfTopic: React.FC<{
   selectedTopic: any | null;
   onCloseWordModal: () => void;
 }> = ({ showWordModal, selectedTopic, onCloseWordModal }) => {
+  const authContext = useContext(AuthContext);
+  const isAdmin = authContext?.isAdmin;
+
   const [words, setWords] = useState<Word[]>([]);
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
 
@@ -143,18 +146,20 @@ const AllWordOfTopic: React.FC<{
           </div>
         </div>
         {/* Button to open Add Word Modal */}
-        <div className="absolute top-[50%] right-10 translate-y-[-50%]">
-          <Button
-            onClick={handleShowAddWordModal}
-            className="bg-primary text-white !p-5 rounded-lg hover:!text-[#16a34a] transition-transform transform hover:scale-125"
-          >
-            Add New Word
-          </Button>
-        </div>
+        {isAdmin && (
+          <div className="absolute top-[50%] right-10 translate-y-[-50%]">
+            <Button
+              onClick={handleShowAddWordModal}
+              className="bg-primary text-white !p-5 rounded-lg hover:!text-[#16a34a]"
+            >
+              Thêm từ vựng
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Add Word Modal */}
-      {selectedTopic && showAddWordModal && (
+      {isAdmin && selectedTopic && showAddWordModal && (
         <AddWordForm
           topicId={selectedTopic.id}
           onWordAdded={handleWordAdded}

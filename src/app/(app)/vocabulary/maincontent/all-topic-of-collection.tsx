@@ -6,10 +6,11 @@ import {
   IconClockFilled,
 } from "@tabler/icons-react";
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import AllWordOfTopic from "@/app/(app)/vocabulary/maincontent/all-word-of-topic";
 import { Button, Skeleton } from "antd";
 import AddTopicForm from "@/app/(app)/vocabulary/maincontent/addform/add-topic-form";
+import { AuthContext } from "@/context/AuthContext";
 
 interface Topic {
   createdAt: string;
@@ -32,6 +33,9 @@ const AllTopicOfCollection: React.FC<{
   const [topicOfCollection, setTopicOfCollection] = useState<Topic[] | null>(
     null
   );
+
+  const authContext = useContext(AuthContext);
+  const isAdmin = authContext?.isAdmin;
 
   const [selectedTopic, setSelectedTopic] = useState<any | null>(null);
   const [showWordModal, setShowWordModal] = useState(false);
@@ -144,18 +148,20 @@ const AllTopicOfCollection: React.FC<{
           </div>
         </div>
         {/* Button to open Add Topic Modal */}
-        <div className="absolute top-[50%] right-10 translate-y-[-50%]">
-          <Button
-            onClick={handleShowAddTopicModal}
-            className="bg-primary text-white !p-5 rounded-lg hover:!text-[#16a34a] transition-transform transform hover:scale-125"
-          >
-            Add New Topic
-          </Button>
-        </div>
+        {isAdmin && (
+          <div className="absolute top-[50%] right-10 translate-y-[-50%]">
+            <Button
+              onClick={handleShowAddTopicModal}
+              className="bg-primary text-white !p-5 rounded-lg hover:!text-[#16a34a] "
+            >
+              Thêm chủ đề
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Add Topic Modal */}
-      {selectedCollection && showAddTopicModal && (
+      {isAdmin && selectedCollection && showAddTopicModal && (
         <AddTopicForm
           collectionId={selectedCollection?.id}
           onTopicAdded={handleTopicAdded}

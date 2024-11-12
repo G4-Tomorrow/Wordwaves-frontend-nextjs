@@ -10,11 +10,13 @@ import { Button } from "@/components/ui/button";
 interface VocabularySetsListProps {
   onShowAllCollection: () => void;
   groupedVocabularyData: { [categoryName: string]: any[] };
+  onOpenCollectionDetail: (collection: any) => void;
 }
 
 const VocabularySetsList: React.FC<VocabularySetsListProps> = ({
   onShowAllCollection,
   groupedVocabularyData = {},
+  onOpenCollectionDetail,
 }) => {
   return (
     <div>
@@ -24,7 +26,10 @@ const VocabularySetsList: React.FC<VocabularySetsListProps> = ({
           <div
             key={categoryName}
             className="hover:bg-gray-200 dark:hover:bg-[#222222] hover:cursor-pointer pt-2 pl-6 pb-6"
-            onClick={onShowAllCollection}
+            onClick={(e) => {
+              e.stopPropagation();
+              onShowAllCollection();
+            }}
           >
             <div className="pl-4">
               <p className="font-medium">{categoryName}</p>
@@ -46,6 +51,10 @@ const VocabularySetsList: React.FC<VocabularySetsListProps> = ({
                     <CarouselItem
                       key={category.id}
                       className="basis-1/3 xl:basis-1/4"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onOpenCollectionDetail(category);
+                      }}
                     >
                       <VocabularySet
                         title={category.name}

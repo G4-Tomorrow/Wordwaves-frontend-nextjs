@@ -250,6 +250,7 @@ const MainContent: React.FC = () => {
           <VocabularySetsList
             onShowAllCollection={handleShowAllCollection}
             groupedVocabularyData={groupedCollectionData}
+            onOpenCollectionDetail={handleOpenCollectionDetail}
           />
         )}
       </div>
@@ -258,10 +259,11 @@ const MainContent: React.FC = () => {
       <AllCollection
         showAllCollection={showAllCollection}
         showTopicModal={showTopicModal}
-        handleOpenCollectionDetail={handleOpenCollectionDetail}
+        onOpenCollectionDetail={handleOpenCollectionDetail}
         groupedVocabularyData={groupedCollectionData}
-        handleSelectPinnedCollection={handleSelectPinnedCollection}
-        handleShowAllCollection={handleShowAllCollection}
+        onSelectPinnedCollection={handleSelectPinnedCollection}
+        onShowAllCollection={handleShowAllCollection}
+        onSetCollectionData={setCollectionData}
       />
 
       {/* Show Topic Modal */}

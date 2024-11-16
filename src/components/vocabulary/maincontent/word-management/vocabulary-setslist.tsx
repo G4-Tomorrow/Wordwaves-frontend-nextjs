@@ -25,7 +25,7 @@ const VocabularySetsList: React.FC<VocabularySetsListProps> = ({
         Object.keys(groupedVocabularyData).map((categoryName) => (
           <div
             key={categoryName}
-            className="hover:bg-gray-200 dark:hover:bg-[#222222] hover:cursor-pointer pt-2 pl-6 pb-6"
+            className="hover:bg-gray-200 dark:hover:bg-[#222222] hover:cursor-pointer pt-2 pl-5 pb-6"
             onClick={(e) => {
               e.stopPropagation();
               onShowAllCollection();

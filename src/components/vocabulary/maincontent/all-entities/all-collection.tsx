@@ -1,11 +1,11 @@
 "use client";
-import { IconChevronLeft } from "@tabler/icons-react";
-import React, { useState, useContext } from "react";
+import { IconChevronLeft, IconChevronUp } from "@tabler/icons-react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { Button } from "antd";
 import { AuthContext } from "@/context/AuthContext";
 import AddCollectionForm from "@/components/vocabulary/maincontent/addform/add-collection-form";
 import VocabularySet from "@/components/vocabulary/maincontent/word-management/vocabulary-set";
-
+import useScrollToTop from "@/hooks/useScrollToTop";
 type AllCategoriesProps = {
   showAllCollection: boolean;
   showTopicModal: boolean;
@@ -14,6 +14,7 @@ type AllCategoriesProps = {
   onSelectPinnedCollection: (folder: any) => void;
   onShowAllCollection: () => void;
   onSetCollectionData: (collection: any) => void;
+  selectedCategoryName?: string;
 };
 
 const AllCollection: React.FC<AllCategoriesProps> = ({
@@ -24,29 +25,71 @@ const AllCollection: React.FC<AllCategoriesProps> = ({
   onSelectPinnedCollection,
   onShowAllCollection,
   onSetCollectionData,
+  selectedCategoryName,
 }) => {
   const [showAddCollectionModal, setShowAddCollectionModal] = useState(false);
+  const [visibleCategories, setVisibleCategories] = useState<{
+    [key: string]: boolean;
+  }>({});
   const authContext = useContext(AuthContext);
   const isAdmin = authContext?.isAdmin;
+  const categoryRef = useRef<{ [categoryName: string]: HTMLDivElement | null }>(
+    {}
+  );
+  const { scrollToTop } = useScrollToTop();
+
+  // Tự động cuộn đến category khi selectedCategoryName thay đổi
+  useEffect(() => {
+    if (selectedCategoryName && categoryRef.current[selectedCategoryName]) {
+      console.log(categoryRef.current[selectedCategoryName]);
+      categoryRef.current[selectedCategoryName]?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [selectedCategoryName]);
+
+  const handleClickToTop = () => {
+    console.log("Button clicked");
+    scrollToTop();
+  };
+
   // sau khi thêm collection thì cập nhật lại dữ liệu ở localstorage và re-render
   const handleCollectionAdded = (newCollection: any) => {
     const currentCollections = JSON.parse(
       localStorage.getItem("collectionsData") || "[]"
     );
 
-    // Thêm bộ sưu tập mới vào mảng hiện tại
     currentCollections.push(newCollection);
-
-    // Lưu mảng bộ sưu tập đã cập nhật vào localStorage
     localStorage.setItem("collectionsData", JSON.stringify(currentCollections));
 
     onSetCollectionData(currentCollections);
-    // Đóng modal
     setShowAddCollectionModal(false);
   };
 
   const handleShowAddCollectionModal = () => {
     setShowAddCollectionModal((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (groupedVocabularyData) {
+      const initialVisibility = Object.keys(groupedVocabularyData).reduce(
+        (acc: { [key: string]: boolean }, categoryName) => {
+          acc[categoryName] = true;
+          return acc;
+        },
+        {}
+      );
+      setVisibleCategories(initialVisibility);
+    }
+  }, [groupedVocabularyData]);
+
+  // Toggle the visibility of vocabulary sets in a category
+  const toggleVisibility = (categoryName: string) => {
+    setVisibleCategories((prevState) => ({
+      ...prevState,
+      [categoryName]: !prevState[categoryName], // Toggle the visibility state of the category
+    }));
   };
 
   return (
@@ -96,14 +139,40 @@ const AllCollection: React.FC<AllCategoriesProps> = ({
         {groupedVocabularyData &&
         Object.keys(groupedVocabularyData).length > 0 ? (
           Object.keys(groupedVocabularyData).map((categoryName) => (
-            <div key={categoryName} className="mb-8">
+            <div
+              key={categoryName}
+              className="mb-8"
+              ref={(el) => {
+                categoryRef.current[categoryName] = el;
+              }}
+            >
               <div className="pl-4 mb-3">
-                <h2>{categoryName}</h2>
-                <p className="text-sm text-primary">
-                  {groupedVocabularyData[categoryName].length} thư mục
-                </p>
+                <div>
+                  <h2
+                    onClick={() => toggleVisibility(categoryName)}
+                    className="cursor-pointer text-lg"
+                  >
+                    {categoryName}
+                  </h2>
+                  <p className="text-sm text-primary">
+                    {groupedVocabularyData[categoryName].length} thư mục
+                  </p>
+                </div>
+                {/* <Button
+                  size="small"
+                  type="link"
+                  onClick={() => toggleCategoryVisibility(categoryName)}
+                >
+                  {visibleItems[categoryName] ? "Thu gọn" : "Mở rộng"}
+                </Button> */}
               </div>
-              <div className="flex flex-wrap gap-6 pl-4">
+              <div
+                className={`flex flex-wrap gap-6 pl-4 transition-all duration-500 ease-in-out transform ${
+                  visibleCategories[categoryName]
+                    ? "max-h-screen opacity-100 translate-y-0"
+                    : "max-h-0 opacity-0 translate-y-[-10px] overflow-hidden"
+                }`}
+              >
                 {groupedVocabularyData[categoryName].map((vocabulary) => (
                   <button
                     onClick={() =>
@@ -111,9 +180,9 @@ const AllCollection: React.FC<AllCategoriesProps> = ({
                         ? onOpenCollectionDetail(vocabulary)
                         : onSelectPinnedCollection(vocabulary)
                     }
+                    key={vocabulary.id}
                   >
                     <VocabularySet
-                      key={vocabulary.id}
                       title={vocabulary.name}
                       thumbnail={vocabulary.thumbnailName}
                       completed={vocabulary.numOfLearnedWord}
@@ -131,6 +200,9 @@ const AllCollection: React.FC<AllCategoriesProps> = ({
           <p>Không có dữ liệu để hiển thị</p>
         )}
       </div>
+      {/* <Button onClick={handleClickToTop}>
+        <IconChevronUp size={30} />
+      </Button> */}
     </div>
   );
 };

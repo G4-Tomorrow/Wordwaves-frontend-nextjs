@@ -11,7 +11,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { Button } from "antd";
 import { AuthContext } from "@/context/AuthContext";
 import AddWordForm from "@/components/vocabulary/maincontent/addform/add-word-form";
-import WordDetailModal from "@/components/vocabulary/maincontent/word-detail";
+import WordDetailModal from "@/components/vocabulary/maincontent/word-management/word-detail";
 interface Word {
   id: string;
   name: string;

@@ -10,7 +10,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { Button, Skeleton } from "antd";
 import { AuthContext } from "@/context/AuthContext";
 import AddTopicForm from "@/components/vocabulary/maincontent/addform/add-topic-form";
-import AllWordOfTopic from "@/components/vocabulary/maincontent/all-word-of-topic";
+import AllWordOfTopic from "@/components/vocabulary/maincontent/all-entities/all-word-of-topic";
 
 interface Topic {
   createdAt: string;

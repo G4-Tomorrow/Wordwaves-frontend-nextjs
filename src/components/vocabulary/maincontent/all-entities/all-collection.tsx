@@ -4,7 +4,7 @@ import React, { useState, useContext } from "react";
 import { Button } from "antd";
 import { AuthContext } from "@/context/AuthContext";
 import AddCollectionForm from "@/components/vocabulary/maincontent/addform/add-collection-form";
-import VocabularySet from "@/components/vocabulary/maincontent/vocabulary-set";
+import VocabularySet from "@/components/vocabulary/maincontent/word-management/vocabulary-set";
 
 type AllCategoriesProps = {
   showAllCollection: boolean;

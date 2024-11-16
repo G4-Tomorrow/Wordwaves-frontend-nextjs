@@ -5,7 +5,7 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
-import VocabularySet from "@/components/vocabulary/maincontent/vocabulary-set";
+import VocabularySet from "@/components/vocabulary/maincontent/word-management/vocabulary-set";
 
 interface VocabularySetsListProps {
   onShowAllCollection: () => void;

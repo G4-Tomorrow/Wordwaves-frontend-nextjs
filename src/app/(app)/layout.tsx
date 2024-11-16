@@ -25,7 +25,7 @@ export default function RootLayout({
           }
         >
           <SidebarApp />
-          <div className="w-full p-5 overflow-y-auto scrollbar-default  dark:scrollbar-dark  ">
+          <div className="w-full p-5 overflow-y-auto dark:scrollbar-dark  ">
             {children}
           </div>
         </div>

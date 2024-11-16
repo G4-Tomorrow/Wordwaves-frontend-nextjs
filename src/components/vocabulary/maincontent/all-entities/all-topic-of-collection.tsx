@@ -45,6 +45,7 @@ const AllTopicOfCollection: React.FC<{
 
   const [showAddTopicModal, setShowAddTopicModal] = useState(false);
 
+  // Fetch topics when selectedCollection changes
   useEffect(() => {
     if (!selectedCollection) return;
     const token = localStorage.getItem("accessToken");
@@ -53,6 +54,7 @@ const AllTopicOfCollection: React.FC<{
     }
   }, [selectedCollection]);
 
+  // Function to fetch topics of a collection
   const fetchCollectionTopics = useCallback(
     async (token: string, collectionId: string) => {
       setLoading(true);
@@ -76,6 +78,7 @@ const AllTopicOfCollection: React.FC<{
     []
   );
 
+  // Handlers for opening and closing modals
   const handleOpenTopicDetail = (topic: Topic) => {
     setSelectedTopic(topic);
     setShowWordModal(true);
@@ -107,6 +110,7 @@ const AllTopicOfCollection: React.FC<{
           : "opacity-0 scale-50 pointer-events-none invisible"
       }`}
     >
+      {/* Header Section */}
       <div className="relative flex px-2.5 py-3.5 gap-5 bg-primary text-white">
         <button
           onClick={handleCloseTopicModal}
@@ -147,6 +151,7 @@ const AllTopicOfCollection: React.FC<{
             </div>
           </div>
         </div>
+
         {/* Button to open Add Topic Modal */}
         {isAdmin && (
           <div className="absolute top-[50%] right-10 translate-y-[-50%]">
@@ -169,6 +174,7 @@ const AllTopicOfCollection: React.FC<{
         />
       )}
 
+      {/* Content Section */}
       {loading ? (
         <div className="grid lg:grid-cols-5 gap-3 px-16 py-4">
           {[...Array(5)].map((_, index) => (

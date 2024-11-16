@@ -7,7 +7,7 @@ import {
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Button, Skeleton } from "antd";
+import { Button, Skeleton, Tooltip } from "antd";
 import { AuthContext } from "@/context/AuthContext";
 import AddTopicForm from "@/components/vocabulary/maincontent/addform/add-topic-form";
 import AllWordOfTopic from "@/components/vocabulary/maincontent/all-entities/all-word-of-topic";
@@ -255,6 +255,29 @@ const AllTopicOfCollection: React.FC<{
       ) : (
         <div className="text-center mt-4">Chưa có chủ đề nào thuộc bộ này</div>
       )}
+
+      {/* Fixed Buttons at the bottom */}
+      <div className="sticky bottom-0 left-0 right-0 grid grid-cols-2 justify-center gap-4 px-80 py-4 bg-white shadow-md w-full">
+        {/* Button Học từ mới */}
+        <Tooltip
+          title="Học từ mới, bao gồm cả những từ chưa hoàn thành 100%"
+          placement="top"
+        >
+          <Button className="bg-blue-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-blue-600 shadow-md">
+            Học từ mới
+          </Button>
+        </Tooltip>
+
+        {/* Button Luyện tập */}
+        <Tooltip
+          title="Luyện tập các từ đã học và các từ này đã đến lúc cần luyện tập"
+          placement="top"
+        >
+          <Button className="bg-yellow-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-yellow-600 shadow-md">
+            Luyện tập
+          </Button>
+        </Tooltip>
+      </div>
 
       {/* Show Word Detail Modal */}
       <AllWordOfTopic

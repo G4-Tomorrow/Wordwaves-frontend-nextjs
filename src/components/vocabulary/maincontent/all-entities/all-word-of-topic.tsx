@@ -8,7 +8,7 @@ import {
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { Button } from "antd";
+import { Button, Tooltip } from "antd";
 import { AuthContext } from "@/context/AuthContext";
 import AddWordForm from "@/components/vocabulary/maincontent/addform/add-word-form";
 import WordDetailModal from "@/components/vocabulary/maincontent/word-management/word-detail";
@@ -220,6 +220,38 @@ const AllWordOfTopic: React.FC<{
           ))}
         </div>
       )}
+
+      <div className="sticky bottom-0 left-0 right-0 grid grid-cols-3 justify-center gap-4 px-36 py-4 bg-white shadow-md w-full">
+        {/* Button Học từ mới */}
+        <Tooltip
+          title="Học từ mới, bao gồm cả những từ chưa hoàn thành 100%"
+          placement="top"
+        >
+          <Button className="bg-blue-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-blue-600 shadow-md">
+            Học từ mới
+          </Button>
+        </Tooltip>
+
+        {/* Button Luyện tập */}
+        <Tooltip
+          title="Luyện tập các từ đã học và các từ này đã đến lúc cần luyện tập"
+          placement="top"
+        >
+          <Button className="bg-yellow-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-yellow-600 shadow-md">
+            Luyện tập
+          </Button>
+        </Tooltip>
+
+        {/* Button Flashcard */}
+        <Tooltip
+          title="Học từ vựng qua Flashcard, giúp bạn nhớ từ vựng nhanh hơn"
+          placement="top"
+        >
+          <Button className="bg-purple-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-purple-600 shadow-md">
+            Flashcard
+          </Button>
+        </Tooltip>
+      </div>
 
       {/* Word Detail Modal */}
       {selectedWord && (

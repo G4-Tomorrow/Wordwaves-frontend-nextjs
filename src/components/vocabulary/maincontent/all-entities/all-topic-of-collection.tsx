@@ -11,6 +11,8 @@ import { Button, Skeleton, Tooltip } from "antd";
 import { AuthContext } from "@/context/AuthContext";
 import AddTopicForm from "@/components/vocabulary/maincontent/addform/add-topic-form";
 import AllWordOfTopic from "@/components/vocabulary/maincontent/all-entities/all-word-of-topic";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 interface Topic {
   createdAt: string;
@@ -44,6 +46,9 @@ const AllTopicOfCollection: React.FC<{
   const [error, setError] = useState<string | null>(null);
 
   const [showAddTopicModal, setShowAddTopicModal] = useState(false);
+
+  const router = useRouter();
+  const { toast } = useToast();
 
   // Fetch topics when selectedCollection changes
   useEffect(() => {
@@ -95,11 +100,24 @@ const AllTopicOfCollection: React.FC<{
         fetchCollectionTopics(token, selectedCollection.id);
       }
     }
+
     setShowAddTopicModal(false);
   };
 
   const handleShowAddTopicModal = () => {
     setShowAddTopicModal((prev) => !prev);
+  };
+
+  const handleLearnNewWords = (collectionId: string) => {
+    router.push(
+      `/flashcard?mode=collection&id=${collectionId.toString()}&isRevision=false`
+    );
+  };
+
+  const handlePracticeWords = (collectionId: string) => {
+    router.push(
+      `/flashcard?mode=collection&id=${collectionId.toString()}&isRevision=true`
+    );
   };
 
   return (
@@ -257,13 +275,16 @@ const AllTopicOfCollection: React.FC<{
           </div>
         )}
         {/* Fixed Buttons at the bottom */}
-        <div className="absolute bottom-0 left-0 right-0 grid grid-cols-2 justify-center gap-4 px-80 py-4 bg-white shadow-md w-full">
+        <div className="absolute bottom-0 left-0 right-0 grid grid-cols-2 justify-center gap-4 px-80 py-4 w-full">
           {/* Button Học từ mới */}
           <Tooltip
             title="Học từ mới, bao gồm cả những từ chưa hoàn thành 100%"
             placement="top"
           >
-            <Button className="bg-blue-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-blue-600 shadow-md">
+            <Button
+              className="bg-blue-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-blue-600 shadow-md"
+              onClick={() => handleLearnNewWords(selectedCollection.id)}
+            >
               Học từ mới
             </Button>
           </Tooltip>
@@ -273,7 +294,10 @@ const AllTopicOfCollection: React.FC<{
             title="Luyện tập các từ đã học và các từ này đã đến lúc cần luyện tập"
             placement="top"
           >
-            <Button className="bg-yellow-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-yellow-600 shadow-md">
+            <Button
+              className="bg-yellow-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-yellow-600 shadow-md"
+              onClick={() => handlePracticeWords(selectedCollection.id)}
+            >
               Luyện tập
             </Button>
           </Tooltip>

@@ -13,6 +13,7 @@ import { AuthContext } from "@/context/AuthContext";
 import AddWordForm from "@/components/vocabulary/maincontent/addform/add-word-form";
 import WordDetailModal from "@/components/vocabulary/maincontent/word-management/word-detail";
 import { preschoolAsUnknow } from "../../../../../public/preschool";
+import { useRouter } from "next/navigation";
 interface Word {
   id: string;
   name: string;
@@ -40,6 +41,8 @@ const AllWordOfTopic: React.FC<{
   const [error, setError] = useState<string | null>(null);
 
   const [showAddWordModal, setShowAddWordModal] = useState(false);
+
+  const router = useRouter();
 
   useEffect(() => {
     if (!selectedTopic) return;
@@ -93,6 +96,18 @@ const AllWordOfTopic: React.FC<{
 
   const handleShowAddWordModal = () => {
     setShowAddWordModal((prev) => !prev);
+  };
+
+  const handleLearnNewWords = (topicId: string) => {
+    router.push(
+      `/flashcard?mode=collection&id=${topicId.toString()}&isRevision=false`
+    );
+  };
+
+  const handlePracticeWords = (topicId: string) => {
+    router.push(
+      `/flashcard?mode=collection&id=${topicId.toString()}&isRevision=true`
+    );
   };
 
   if (!showWordModal) return null;
@@ -221,12 +236,15 @@ const AllWordOfTopic: React.FC<{
           </div>
         )}
 
-        <div className="sticky bottom-0 left-0 right-0 grid grid-cols-3 justify-center gap-4 px-36 py-4 w-full">
+        <div className="sticky bottom-0 left-0 right-0 grid grid-cols-2 justify-center gap-4 px-80 py-4 w-full">
           <Tooltip
             title="Học từ mới, bao gồm cả những từ chưa hoàn thành 100%"
             placement="top"
           >
-            <Button className="bg-blue-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-blue-600 shadow-md">
+            <Button
+              className="bg-blue-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-blue-600 shadow-md"
+              onClick={() => handleLearnNewWords(selectedTopic.id)}
+            >
               Học từ mới
             </Button>
           </Tooltip>
@@ -235,19 +253,22 @@ const AllWordOfTopic: React.FC<{
             title="Luyện tập các từ đã học và các từ này đã đến lúc cần luyện tập"
             placement="top"
           >
-            <Button className="bg-yellow-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-yellow-600 shadow-md">
+            <Button
+              className="bg-yellow-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-yellow-600 shadow-md"
+              onClick={() => handlePracticeWords(selectedTopic.id)}
+            >
               Luyện tập
             </Button>
           </Tooltip>
 
-          <Tooltip
+          {/* <Tooltip
             title="Học từ vựng qua Flashcard, giúp bạn nhớ từ vựng nhanh hơn"
             placement="top"
           >
             <Button className="bg-purple-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-purple-600 shadow-md">
               Flashcard
             </Button>
-          </Tooltip>
+          </Tooltip> */}
         </div>
 
         {/* Word Detail Modal */}

@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { useState } from 'react';
 import Flashcard from '@/components/Flashcard';
 import { FaBook, FaLightbulb } from "react-icons/fa";
@@ -16,10 +16,10 @@ export default function FlashCard() {
         setMode(selectedMode);
     };
 
-    // Choose an ID based on the type selection, you might want to replace these with actual IDs from your data
+    // Chọn collectionId hoặc topicId tùy thuộc vào type đã chọn
     const id = type === 'collection'
-        ? '135dbb51-1f57-4ba5-add4-5ac85e207f80'
-        : 'fa07450f-6870-4a43-8154-0b6b6138c55e';
+        ? '135dbb51-1f57-4ba5-add4-5ac85e207f80' // Thay thế với ID của collection
+        : 'fa07450f-6870-4a43-8154-0b6b6138c55e'; // Thay thế với ID của topic
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-white to-gray-100 p-8">
@@ -29,8 +29,8 @@ export default function FlashCard() {
                         <button
                             onClick={() => handleTypeChange("collection")}
                             className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-300 ${type === "collection"
-                                    ? "bg-blue-600 text-white shadow-lg"
-                                    : "bg-white text-gray-600 hover:bg-blue-50"
+                                ? "bg-blue-600 text-white shadow-lg"
+                                : "bg-white text-gray-600 hover:bg-blue-50"
                                 }`}
                             aria-label="Select Collection Type"
                         >
@@ -40,8 +40,8 @@ export default function FlashCard() {
                         <button
                             onClick={() => handleTypeChange("topic")}
                             className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-300 ${type === "topic"
-                                    ? "bg-blue-600 text-white shadow-lg"
-                                    : "bg-white text-gray-600 hover:bg-blue-50"
+                                ? "bg-blue-600 text-white shadow-lg"
+                                : "bg-white text-gray-600 hover:bg-blue-50"
                                 }`}
                             aria-label="Select Topic Type"
                         >
@@ -53,8 +53,8 @@ export default function FlashCard() {
                         <button
                             onClick={() => handleModeChange("learn")}
                             className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-300 ${mode === "learn"
-                                    ? "bg-green-600 text-white shadow-lg"
-                                    : "bg-white text-gray-600 hover:bg-green-50"
+                                ? "bg-green-600 text-white shadow-lg"
+                                : "bg-white text-gray-600 hover:bg-green-50"
                                 }`}
                             aria-label="Select Learn Mode"
                         >
@@ -64,8 +64,8 @@ export default function FlashCard() {
                         <button
                             onClick={() => handleModeChange("revision")}
                             className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-300 ${mode === "revision"
-                                    ? "bg-green-600 text-white shadow-lg"
-                                    : "bg-white text-gray-600 hover:bg-green-50"
+                                ? "bg-green-600 text-white shadow-lg"
+                                : "bg-white text-gray-600 hover:bg-green-50"
                                 }`}
                             aria-label="Select Revision Mode"
                         >
@@ -74,48 +74,9 @@ export default function FlashCard() {
                         </button>
                     </div>
                 </div>
+                {/* Truyền mode và id vào Flashcard */}
                 <Flashcard mode={mode === 'learn' ? 'collection' : 'revision'} id={id} />
-          
             </div>
         </div>
-        // <main className="min-h-screen bg-gradient-to-b from-white to-gray-100">
-        //     <div className="flex justify-center mt-4 space-x-4">
-        //         {/* Type Selector */}
-        //         <div>
-        //             <button
-        //                 onClick={() => handleTypeChange('collection')}
-        //                 className={`px-4 py-2 ${type === 'collection' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        //             >
-        //                 Bộ sưu tập
-        //             </button>
-        //             <button
-        //                 onClick={() => handleTypeChange('topic')}
-        //                 className={`px-4 py-2 ${type === 'topic' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        //             >
-        //                 Chủ đề
-        //             </button>
-        //         </div>
-
-        //         {/* Mode Selector */}
-        //         <div>
-        //             <button
-        //                 onClick={() => handleModeChange('learn')}
-        //                 className={`px-4 py-2 ${mode === 'learn' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        //             >
-        //                 Học mới
-        //             </button>
-        //             <button
-        //                 onClick={() => handleModeChange('revision')}
-        //                 className={`px-4 py-2 ${mode === 'revision' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        //             >
-        //                 Ôn tập
-        //             </button>
-        //         </div>
-        //     </div>
-
-        //     {/* Pass type and mode to Flashcard */}
-        //     <Flashcard mode={mode === 'learn' ? 'collection' : 'revision'} id={id} />
-        // </main>
-        
     );
 }

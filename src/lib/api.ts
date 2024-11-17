@@ -145,7 +145,7 @@ export const updateLearningProgress = async (
 };
 export const fetchCollectionRevisionWords = async (
   collectionId: string,
-  numOfWords: number = 20
+  numOfWords: number = 5
 ): Promise<LearningResponse> => {
   const accessToken = localStorage.getItem("accessToken");
 
@@ -167,7 +167,7 @@ export const fetchCollectionRevisionWords = async (
 
 export const fetchTopicRevisionWords = async (
   topicId: string,
-  numOfWords: number = 20
+  numOfWords: number = 5
 ): Promise<LearningResponse> => {
   const accessToken = localStorage.getItem("accessToken");
 

@@ -50,7 +50,6 @@ class Http {
     delete this.instance.defaults.headers.common["Authorization"];
   }
 
-
   get<T = any>(
     url: string,
     config?: AxiosRequestConfig

@@ -13,12 +13,17 @@ import { fetchWordDetails, type WordDetail as WordDetailType } from '@/lib/api';
 import './styles.css';
 import ScoreIndicator from './ScoreIndiCator';
 
+
 interface FlashcardProps {
-  mode: 'collection' | 'revision';
+
+  mode: "collection" | "topic" | "revision";
+
   id: string;
+
+  isRevision?: boolean;
 }
 
-const Flashcard: React.FC<FlashcardProps> = ({ mode, id }) => {
+const Flashcard: React.FC<FlashcardProps> = ({ mode, id, isRevision }) => {
   const {
     words,
     loading,
@@ -26,7 +31,7 @@ const Flashcard: React.FC<FlashcardProps> = ({ mode, id }) => {
     progress,
     markWordAsLearned,
     submitPendingUpdates,
-  } = useFlashcards({ mode, id });
+  } = useFlashcards({ mode, id, isRevision });
 
   const isReviewMode = mode === "revision";
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -38,6 +43,27 @@ const Flashcard: React.FC<FlashcardProps> = ({ mode, id }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [wordDetails, setWordDetails] = useState<WordDetailType | null>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
+  const [unknownWords, setUnknownWords] = useState(words);
+
+
+
+  const updateCurrentWord = (word: WordDetailType) => {
+    const updatedWords = words.map((w) => (w.id === word.id ? word : w));
+    setUnknownWords(updatedWords);
+  };
+
+  useEffect(() => {
+    if (!isReviewMode && currentWordIndex >= words.length) {
+      if (unknownWords.length > 0) {
+        console.log("Kích hoạt quizMode với các từ chưa biết:", unknownWords);
+        setQuizMode(true);
+        setCurrentWordIndex(0);
+      } else {
+        console.log("Bạn đã ôn tập xong từ vựng!");
+        setQuizMode(false);
+      }
+    }
+  }, [currentWordIndex, words.length, isReviewMode, unknownWords]);
 
   useEffect(() => {
     if (quizMode && words.length > 0) {
@@ -75,6 +101,25 @@ const Flashcard: React.FC<FlashcardProps> = ({ mode, id }) => {
     }
   }, [currentWordIndex, words.length]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      switch (event.code) {
+        case "Space":
+          handleFlip();
+          break;
+        case "Escape":
+          handleAnswer(true, true);
+          break;
+        case "Enter":
+          handleAnswer(false);
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentWordIndex, flipped, words]);
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -93,18 +138,30 @@ const Flashcard: React.FC<FlashcardProps> = ({ mode, id }) => {
   const handleFlip = () => setFlipped(prev => !prev);
 
   const handleAnswer = async (isCorrect: boolean, isAlreadyKnow: boolean = false) => {
+    const currentWord = words[currentWordIndex];
+
+    if (!isCorrect && currentWord) {
+      setUnknownWords((prev) => [...prev, currentWord]);
+    }
     await markWordAsLearned(currentWord.id, isCorrect, isAlreadyKnow);
+
     const nextIndex = currentWordIndex + 1;
+
     if (nextIndex < words.length) {
       setCurrentWordIndex(nextIndex);
       setFlipped(false);
-      setCorrect(null);
-      setSelectedAnswer(null);
-      setWordDetails(null);
-    } else {
+    } else if (unknownWords.length > 0) {
       setQuizMode(true);
+    } else {
+      setQuizMode(false);
+      console.log("Bạn đã hoàn thành ôn tập!");
     }
   };
+
+  const handleQuizAnswer = (isCorrect: boolean) => {
+    setCorrect(isCorrect);
+  };
+
   const buttonVariants = {
     hover: {
       scale: 1.05,
@@ -128,22 +185,27 @@ const Flashcard: React.FC<FlashcardProps> = ({ mode, id }) => {
       }
     }
   };
+
   return (
     <div className="flex relative flex-col justify-center items-center w-full pt-4">
-      <div className="w-4/5 bg-[#BBEACB] onClick={handleFlip}  rounded-full h-3">
-        <div
-          className="bg-green-500 h-3 rounded-full transition-all duration-500 ease-linear"
-          style={{ width: `${progressPercentage}%` }}
-        />
-        <div className="flex justify-between items-center  px-3 mt-3">
-          <div className="font-medium text-[1.1rem]">
-            {isReviewMode ? "Ôn tập" : "Học từ mới"}
+      {unknownWords.length}
+      {!quizMode && (
+        <div className="w-4/5 bg-[#BBEACB] onClick={handleFlip}  rounded-full h-3">
+          <div
+            className="bg-green-500 h-3 rounded-full transition-all duration-500 ease-linear"
+            style={{ width: `${progressPercentage}%` }}
+          />
+          <div className="flex justify-between items-center  px-3 mt-3">
+            <div className="font-medium text-[1.1rem]">
+              {isReviewMode ? "Ôn tập" : "Học từ mới"}
+            </div>
+
+            <ScoreIndicator level={currentWord.level} />
+
           </div>
+        </div>)
 
-          <ScoreIndicator level={currentWord.level} />
-
-        </div>
-      </div>
+      }
 
       <div className="flex  items-center w-[800px] relative pt-28 flex-col  p-4">
         {!quizMode ? (
@@ -151,6 +213,7 @@ const Flashcard: React.FC<FlashcardProps> = ({ mode, id }) => {
             <div className="front  rounded-xl flex flex-col gap-3 items-center justify-between pt-10 pb-4">
               <div className="flex flex-col gap-3 items-center justify-center">
                 <h2 className="text-2xl font-semibold">{currentWord.word}</h2>
+
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="icon" className="rounded-full">
                     <Volume2 className="text-blue-500" />
@@ -158,7 +221,7 @@ const Flashcard: React.FC<FlashcardProps> = ({ mode, id }) => {
                 </div>
               </div>
               <div className="text-primary flex items-center gap-3 font-medium">
-                <FlipHorizontal onClick={handleFlip}  /> Lật - Nhấn Space
+                <FlipHorizontal onClick={handleFlip} /> Lật - Nhấn Space
               </div>
             </div>
 
@@ -168,14 +231,31 @@ const Flashcard: React.FC<FlashcardProps> = ({ mode, id }) => {
           </div>
         ) : (
           <QuizSection
-            word={currentWord}
-            answers={multipleChoiceAnswers}
+            quizType={currentWord.learningType}
+            unknownWords={unknownWords}
+            multipleChoiceAnswers={multipleChoiceAnswers}
+            multipleChoiceMeanings={[]}
             selectedAnswer={selectedAnswer}
-            onAnswer={handleAnswer}
+            correct={correct}
+            inputAnswer={inputAnswer}
+            trueFalseQuestion={""}
+            sentenceBuilderWords={[]}
+            correctSentence={""}
+            handleMultipleChoiceAnswer={(selected) => {
+              setSelectedAnswer(selected);
+              handleQuizAnswer(selected === currentWord.word);
+            }}
+            handleMultipleChoiceMeaningAnswer={() => { }}
+            handleFillInAnswer={() => { }}
+            handleHint={() => { }}
+            setInputAnswer={setInputAnswer}
+            handleTrueFalseAnswer={() => { }}
+            handleSentenceBuilderSubmit={() => { }}
+            setUnknownWords={setUnknownWords}
+            setCorrect={setCorrect}
+            setCurrentWord={updateCurrentWord}
           />
         )}
-
-      
       </div>
       {!quizMode && (
         <div className="flex justify-center items-center w-[800px]  bg-gradient-to-br from-gray-50 to-gray-100">
@@ -223,13 +303,6 @@ const Flashcard: React.FC<FlashcardProps> = ({ mode, id }) => {
             </div>
           </div>
         </div>
-      )}
-      {correct !== null && (
-        <ResultCard
-          correct={correct}
-          word={currentWord}
-          onNext={() => handleAnswer(correct)}
-        />
       )}
 
     </div>

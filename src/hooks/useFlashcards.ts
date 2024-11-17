@@ -14,11 +14,16 @@ import {
 interface UseFlashcardsProps {
   mode: "collection" | "topic";
   id: string;
+  isRevision?: boolean;
 }
 
 const MAX_SCORE = 5;
 
-export const useFlashcards = ({ mode, id }: UseFlashcardsProps) => {
+export const useFlashcards = ({
+  mode,
+  id,
+  isRevision = false,
+}: UseFlashcardsProps) => {
   const [words, setWords] = useState<LearningWord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,68 +33,50 @@ export const useFlashcards = ({ mode, id }: UseFlashcardsProps) => {
   }>({ total: 0, completed: 0 });
   const [pendingUpdates, setPendingUpdates] = useState<WordUpdate[]>([]);
 
-  useEffect(() => {
-    const fetchWords = async () => {
-      try {
-        setLoading(true);
-        const response =
+  const fetchWords = async () => {
+    try {
+      setLoading(true);
+      let response;
+
+      if (isRevision) {
+        response =
+          mode === "collection"
+            ? await fetchCollectionRevisionWords(id)
+            : await fetchTopicRevisionWords(id);
+      } else {
+        response =
           mode === "collection"
             ? await fetchCollectionWords(id)
             : await fetchTopicReviewWords(id);
-
-        setWords(response.result.words);
-        setProgress({
-          total: response.result.numOfWords,
-          completed: 0,
-        });
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch words");
-      } finally {
-        setLoading(false);
       }
-    };
 
-    fetchWords();
-  }, [mode, id]);
+      setWords(response.result.words);
+      setProgress({
+        total: response.result.numOfWords,
+        completed: 0,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch words");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchWords = async () => {
-      try {
-        setLoading(true);
-        let response;
-
-        if (mode === "collection") {
-          response = await fetchCollectionRevisionWords(id);
-        } else {
-          response = await fetchTopicRevisionWords(id);
-        }
-
-        setWords(response.result.words);
-        setProgress({
-          total: response.result.numOfWords,
-          completed: 0,
-        });
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch words");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchWords();
-  }, [mode, id]);
+  }, [mode, id, isRevision]);
+
   const markWordAsLearned = async (
     wordId: string,
     isCorrect: boolean,
     isAlreadyKnow: boolean = false
   ) => {
     try {
-      // Add to pending updates
       setPendingUpdates((prev) => [
         ...prev,
         { wordId, isCorrect, isAlreadyKnow },
       ]);
 
-      // Update local state
       setWords((prev) =>
         prev.map((word) => {
           if (word.id === wordId) {
@@ -123,20 +110,19 @@ export const useFlashcards = ({ mode, id }: UseFlashcardsProps) => {
 
     try {
       await updateLearningProgress(pendingUpdates);
-      setPendingUpdates([]); // Clear pending updates after successful submission
+      setPendingUpdates([]);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to submit updates");
     }
   };
 
-  // Submit pending updates when component unmounts or when switching modes
   useEffect(() => {
     return () => {
       if (pendingUpdates.length > 0) {
         submitPendingUpdates();
       }
     };
-  }, []);
+  }, [pendingUpdates]);
 
   return {
     words,

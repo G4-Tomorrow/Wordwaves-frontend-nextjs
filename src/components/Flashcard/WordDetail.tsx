@@ -47,7 +47,7 @@ const WordDetail: React.FC<WordDetailProps> = ({ details, isLoading }) => {
     };
 
     return (
-    
+
         <div className="max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-lg my-8">
 
             <div className="relative">
@@ -63,7 +63,7 @@ const WordDetail: React.FC<WordDetailProps> = ({ details, isLoading }) => {
             </div>
 
             <div className="space-y-4 mb-6">
-                {details.phonetics.map((phonetic, index) => (
+                {details?.phonetics?.map((phonetic, index) => (
                     <div key={index} className="flex items-center space-x-4">
                         <span className="text-gray-600 font-mono">{phonetic.text}</span>
                         <button
@@ -78,7 +78,7 @@ const WordDetail: React.FC<WordDetailProps> = ({ details, isLoading }) => {
             </div>
 
             <div className="space-y-6">
-                {details.meanings.map((meaning, index) => (
+                {details.meanings?.map((meaning, index) => (
                     <div key={index} className="border-t pt-4">
                         <button
                             onClick={() => toggleSection(meaning.partOfSpeech)}

@@ -4,10 +4,9 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthContextProvider } from "@/context/AuthContext";
 
-import { Poppins } from '@next/font/google';
+import { Poppins } from "@next/font/google";
 
 import { Toaster } from "@/components/ui/toaster";
-
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -20,8 +19,8 @@ const geistMono = localFont({
   weight: "100 900",
 });
 const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400','500','600', '700'], 
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 export const metadata: Metadata = {
   title: {
@@ -47,10 +46,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* <AuthContextProvider> */}
-          <Toaster />
-          {children}
-          {/* </AuthContextProvider> */}
+          <AuthContextProvider>
+            <Toaster />
+            {children}
+          </AuthContextProvider>
         </ThemeProvider>
       </body>
     </html>

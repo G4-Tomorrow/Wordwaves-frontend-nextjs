@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import SidebarApp from "./sidebar-app";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export default function RootLayout({
   children,
@@ -7,7 +8,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className={` antialiased bg-[#f4f7fc]`}>
+    <div className={`antialiased bg-[#f4f7fc]`}>
       <ThemeProvider
         attribute="class"
         defaultTheme="light"

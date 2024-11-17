@@ -142,9 +142,7 @@ const WordDetail: React.FC<WordDetailProps> = ({ details, isLoading }) => {
                 ))}
 
             </div>
-            <Button onClick={toggleFlip} className="absolute top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
-                Flip
-            </Button>
+
             {/* <div className="mt-6 pt-4 border-t text-sm text-gray-500">
                 <p>ID: {dummyData.id}</p>
                 <p>Created: {new Date(dummyData.metadata.createdAt).toLocaleDateString()}</p>

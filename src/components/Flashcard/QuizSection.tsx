@@ -119,7 +119,7 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
       animate={{ opacity: 1, y: 0 }}
       className="max-w-2xl mx-auto p-6"
     >
-      <div className="bg-white rounded-2xl shadow-xl p-8 border border-indigo-100">
+      <div className="bg-white rounded-2xl shadow-xl w-[600px] p-8 border border-indigo-100">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
             <Brain className="w-8 h-8 text-indigo-500" />

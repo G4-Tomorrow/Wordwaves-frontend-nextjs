@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import http from "@/utils/http"; // Ensure `http` module is set up for API calls
+import { toast } from "@/hooks/use-toast";
 
 const AddCollectionForm: React.FC<{
   onCollectionAdded: (newCollectionData: any) => void;
@@ -64,7 +65,12 @@ const AddCollectionForm: React.FC<{
       });
 
       if (response.data.code === 1000) {
-        alert("Bộ sưu tập đã được thêm thành công!");
+        toast({
+          title: "Thành công",
+          description: "Bộ sưu tập đã được thêm thành công!",
+          duration: 3000, // Duration in ms
+          type: "foreground",
+        });
         onCollectionAdded(response.data.result);
         setName("");
         setThumbnailName("");

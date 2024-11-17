@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import http from "@/utils/http"; // Ensure `http` module is set up for API calls
+import { toast } from "@/hooks/use-toast";
 
 const AddTopicForm: React.FC<{
   collectionId: string;
@@ -62,7 +63,12 @@ const AddTopicForm: React.FC<{
       });
 
       if (response.data.code === 1000) {
-        alert("Chủ đề đã được thêm thành công!");
+        toast({
+          title: "Thành công",
+          description: "Chủ đề đã được thêm thành công!",
+          duration: 3000, // Duration in ms
+          type: "foreground",
+        });
         onTopicAdded();
         setName("");
         setThumbnail(null);

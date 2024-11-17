@@ -110,181 +110,181 @@ const AllTopicOfCollection: React.FC<{
           : "opacity-0 scale-50 pointer-events-none invisible"
       }`}
     >
-      {/* Header Section */}
-      <div className="relative flex px-2.5 py-3.5 gap-5 bg-primary text-white">
-        <button
-          onClick={handleCloseTopicModal}
-          className="font-bold hover:text-gray-300"
-        >
-          <IconChevronLeft size={30} />
-        </button>
-        <div className="flex gap-5 items-center">
-          <Image
-            src={
-              selectedCollection?.thumbnailName ||
-              "https://voca-land.sgp1.cdn.digitaloceanspaces.com/-1/1653745889658/92e1b62145539c2bdcd28d6b8204d77d54c7cb41269edef6d4b5b98989985091.png"
-            }
-            width={100}
-            height={100}
-            alt="folder"
-            className="w-16 h-16 rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-[5px]"
-          />
-          <div className="w-full flex flex-col gap-2 items-start">
-            <p className="font-semibold ">
-              {selectedCollection?.name || "Collection Name Unavailable"}
-            </p>
-            <div className="text-xs text-gray-500 flex gap-2 font-semibold bg-white px-2 py-[5px] rounded-full">
-              <div className="flex items-center text-[#0088E6] gap-1">
-                <IconCircleCheckFilled width={19} height={19} />
-                <p className="mt-0.5 tracking-[0.1em]">
-                  {selectedCollection?.numOfLearnedWord || 0}/
-                  {selectedCollection?.numOfTotalWords || 0}
-                </p>
-                đã học
-              </div>
-              <div className="flex items-center text-primary gap-1">
-                <IconClockFilled width={19} height={19} />
-                <p className="mt-0.5">
-                  {selectedCollection?.numOfLearningWord || 0} cần luyện tập
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Button to open Add Topic Modal */}
-        {isAdmin && (
-          <div className="absolute top-[50%] right-10 translate-y-[-50%]">
-            <Button
-              onClick={handleShowAddTopicModal}
-              className="bg-primary text-white !p-5 rounded-lg hover:!text-[#16a34a] "
-            >
-              Thêm chủ đề
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* Add Topic Modal */}
-      {isAdmin && selectedCollection && showAddTopicModal && (
-        <AddTopicForm
-          collectionId={selectedCollection?.id}
-          onTopicAdded={handleTopicAdded}
-          onCloseAddTopicModal={handleShowAddTopicModal}
-        />
-      )}
-
-      {/* Content Section */}
-      {loading ? (
-        <div className="grid lg:grid-cols-5 gap-3 px-16 py-4">
-          {[...Array(5)].map((_, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center gap-1.5 py-14"
-            >
-              {/* Skeleton for image */}
-              <Skeleton.Avatar
-                active
-                shape="circle"
-                size={55}
-                className="border-[7.5px] border-[#A5E3BB] bg-white p-[5px] mb-2 rounded-full"
-              />
-              {/* Skeleton for title */}
-              <Skeleton.Input
-                active
-                style={{ width: "60%", height: "20px" }}
-                className="rounded-full"
-              />
-              {/* Skeleton for progress indicators */}
-              <div className="flex gap-2 text-xs font-semibold rounded-full mt-1">
-                <Skeleton.Input
-                  active
-                  style={{ width: "35px", height: "15px" }}
-                  className="rounded-full"
-                />
-                <Skeleton.Input
-                  active
-                  style={{ width: "35px", height: "15px" }}
-                  className="rounded-full"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : error ? (
-        <div className="text-center mt-4 text-red-500">
-          Error fetching data: {error}
-        </div>
-      ) : topicOfCollection?.length ? (
-        <div className="px-16 py-4 grid grid-cols-5 gap-3 container">
-          {topicOfCollection.map((topic) => (
-            <button
-              key={topic.id}
-              className="flex flex-col items-center gap-1.5 hover:bg-gray-100 rounded-3xl py-14"
-              onClick={() => handleOpenTopicDetail(topic)}
-            >
-              <Image
-                src={
-                  topic.thumbnailName ||
-                  "https://voca-land.sgp1.cdn.digitaloceanspaces.com/-1/1653745889658/92e1b62145539c2bdcd28d6b8204d77d54c7cb41269edef6d4b5b98989985091.png"
-                }
-                width={100}
-                height={100}
-                alt="folder"
-                className="w-[75px] h-[75px] rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-[5px] mb-2"
-              />
-              <p className="text-lg">{topic.name}</p>
-              <div className="text-xs text-gray-500 flex gap-2 font-semibold rounded-full">
+      <div>
+        {/* Header Section */}
+        <div className="relative flex px-2.5 py-3.5 gap-5 bg-primary text-white">
+          <button
+            onClick={handleCloseTopicModal}
+            className="font-bold hover:text-gray-300"
+          >
+            <IconChevronLeft size={30} />
+          </button>
+          <div className="flex gap-5 items-center">
+            <Image
+              src={
+                selectedCollection?.thumbnailName ||
+                "https://voca-land.sgp1.cdn.digitaloceanspaces.com/-1/1653745889658/92e1b62145539c2bdcd28d6b8204d77d54c7cb41269edef6d4b5b98989985091.png"
+              }
+              width={100}
+              height={100}
+              alt="folder"
+              className="w-16 h-16 rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-[5px]"
+            />
+            <div className="w-full flex flex-col gap-2 items-start">
+              <p className="font-semibold ">
+                {selectedCollection?.name || "Collection Name Unavailable"}
+              </p>
+              <div className="text-xs text-gray-500 flex gap-2 font-semibold bg-white px-2 py-[5px] rounded-full">
                 <div className="flex items-center text-[#0088E6] gap-1">
                   <IconCircleCheckFilled width={19} height={19} />
-                  <p className="mt-0.5">
+                  <p className="mt-0.5 tracking-[0.1em]">
                     {selectedCollection?.numOfLearnedWord || 0}/
                     {selectedCollection?.numOfTotalWords || 0}
                   </p>
+                  đã học
                 </div>
                 <div className="flex items-center text-primary gap-1">
                   <IconClockFilled width={19} height={19} />
                   <p className="mt-0.5">
-                    {selectedCollection?.numOfLearningWord || 0}
+                    {selectedCollection?.numOfLearningWord || 0} cần luyện tập
                   </p>
                 </div>
               </div>
-            </button>
-          ))}
+            </div>
+          </div>
+
+          {/* Button to open Add Topic Modal */}
+          {isAdmin && (
+            <div className="absolute top-[50%] right-10 translate-y-[-50%]">
+              <Button
+                onClick={handleShowAddTopicModal}
+                className="bg-primary text-white !p-5 rounded-lg hover:!text-[#16a34a] "
+              >
+                Thêm chủ đề
+              </Button>
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="text-center mt-4">Chưa có chủ đề nào thuộc bộ này</div>
-      )}
+        {/* Add Topic Modal */}
+        {isAdmin && selectedCollection && showAddTopicModal && (
+          <AddTopicForm
+            collectionId={selectedCollection?.id}
+            onTopicAdded={handleTopicAdded}
+            onCloseAddTopicModal={handleShowAddTopicModal}
+          />
+        )}
+        {/* Content Section */}
+        {loading ? (
+          <div className="grid lg:grid-cols-5 gap-3 px-16 py-4">
+            {[...Array(5)].map((_, index) => (
+              <div
+                key={index}
+                className="flex flex-col items-center gap-1.5 py-14"
+              >
+                {/* Skeleton for image */}
+                <Skeleton.Avatar
+                  active
+                  shape="circle"
+                  size={55}
+                  className="border-[7.5px] border-[#A5E3BB] bg-white p-[5px] mb-2 rounded-full"
+                />
+                {/* Skeleton for title */}
+                <Skeleton.Input
+                  active
+                  style={{ width: "60%", height: "20px" }}
+                  className="rounded-full"
+                />
+                {/* Skeleton for progress indicators */}
+                <div className="flex gap-2 text-xs font-semibold rounded-full mt-1">
+                  <Skeleton.Input
+                    active
+                    style={{ width: "35px", height: "15px" }}
+                    className="rounded-full"
+                  />
+                  <Skeleton.Input
+                    active
+                    style={{ width: "35px", height: "15px" }}
+                    className="rounded-full"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center mt-4 text-red-500">
+            Error fetching data: {error}
+          </div>
+        ) : topicOfCollection?.length ? (
+          <div className="px-16 py-4 grid grid-cols-5 gap-3 container">
+            {topicOfCollection.map((topic) => (
+              <button
+                key={topic.id}
+                className="flex flex-col items-center gap-1.5 hover:bg-gray-100 rounded-3xl py-14"
+                onClick={() => handleOpenTopicDetail(topic)}
+              >
+                <Image
+                  src={
+                    topic.thumbnailName ||
+                    "https://voca-land.sgp1.cdn.digitaloceanspaces.com/-1/1653745889658/92e1b62145539c2bdcd28d6b8204d77d54c7cb41269edef6d4b5b98989985091.png"
+                  }
+                  width={100}
+                  height={100}
+                  alt="folder"
+                  className="w-[75px] h-[75px] rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-[5px] mb-2"
+                />
+                <p className="text-lg">{topic.name}</p>
+                <div className="text-xs text-gray-500 flex gap-2 font-semibold rounded-full">
+                  <div className="flex items-center text-[#0088E6] gap-1">
+                    <IconCircleCheckFilled width={19} height={19} />
+                    <p className="mt-0.5">
+                      {selectedCollection?.numOfLearnedWord || 0}/
+                      {selectedCollection?.numOfTotalWords || 0}
+                    </p>
+                  </div>
+                  <div className="flex items-center text-primary gap-1">
+                    <IconClockFilled width={19} height={19} />
+                    <p className="mt-0.5">
+                      {selectedCollection?.numOfLearningWord || 0}
+                    </p>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center mt-4">
+            Chưa có chủ đề nào thuộc bộ này
+          </div>
+        )}
+        {/* Fixed Buttons at the bottom */}
+        <div className="absolute bottom-0 left-0 right-0 grid grid-cols-2 justify-center gap-4 px-80 py-4 bg-white shadow-md w-full">
+          {/* Button Học từ mới */}
+          <Tooltip
+            title="Học từ mới, bao gồm cả những từ chưa hoàn thành 100%"
+            placement="top"
+          >
+            <Button className="bg-blue-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-blue-600 shadow-md">
+              Học từ mới
+            </Button>
+          </Tooltip>
 
-      {/* Fixed Buttons at the bottom */}
-      <div className="sticky bottom-0 left-0 right-0 grid grid-cols-2 justify-center gap-4 px-80 py-4 bg-white shadow-md w-full">
-        {/* Button Học từ mới */}
-        <Tooltip
-          title="Học từ mới, bao gồm cả những từ chưa hoàn thành 100%"
-          placement="top"
-        >
-          <Button className="bg-blue-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-blue-600 shadow-md">
-            Học từ mới
-          </Button>
-        </Tooltip>
-
-        {/* Button Luyện tập */}
-        <Tooltip
-          title="Luyện tập các từ đã học và các từ này đã đến lúc cần luyện tập"
-          placement="top"
-        >
-          <Button className="bg-yellow-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-yellow-600 shadow-md">
-            Luyện tập
-          </Button>
-        </Tooltip>
+          {/* Button Luyện tập */}
+          <Tooltip
+            title="Luyện tập các từ đã học và các từ này đã đến lúc cần luyện tập"
+            placement="top"
+          >
+            <Button className="bg-yellow-500 text-white px-16 py-6 text-lg font-semibold rounded-xl flex items-center gap-2 hover:bg-yellow-600 shadow-md">
+              Luyện tập
+            </Button>
+          </Tooltip>
+        </div>
+        {/* Show Word Detail Modal */}
+        <AllWordOfTopic
+          showWordModal={showWordModal}
+          selectedTopic={selectedTopic}
+          onCloseWordModal={handleCloseWordModal}
+        />
       </div>
-
-      {/* Show Word Detail Modal */}
-      <AllWordOfTopic
-        showWordModal={showWordModal}
-        selectedTopic={selectedTopic}
-        onCloseWordModal={handleCloseWordModal}
-      />
     </div>
   );
 };

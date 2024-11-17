@@ -1,6 +1,6 @@
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://backend-production-c2cb.up.railway.app/wordwaves";
+  "https://backend-production-7ea7.up.railway.app/wordwaves";
 export interface Phonetic {
   text: string;
   audio: string;
@@ -143,7 +143,7 @@ export const updateLearningProgress = async (
 };
 export const fetchCollectionRevisionWords = async (
   collectionId: string,
-  numOfWords: number = 20
+  numOfWords: number = 5
 ): Promise<LearningResponse> => {
   const accessToken = localStorage.getItem("accessToken");
 
@@ -165,7 +165,7 @@ export const fetchCollectionRevisionWords = async (
 
 export const fetchTopicRevisionWords = async (
   topicId: string,
-  numOfWords: number = 20
+  numOfWords: number = 5
 ): Promise<LearningResponse> => {
   const accessToken = localStorage.getItem("accessToken");
 

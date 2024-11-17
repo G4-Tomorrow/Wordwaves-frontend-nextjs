@@ -188,7 +188,7 @@ const Flashcard: React.FC<FlashcardProps> = ({ mode, id, isRevision }) => {
 
   return (
     <div className="flex relative flex-col justify-center items-center w-full pt-4">
-      {unknownWords.length}
+
       {!quizMode && (
         <div className="w-4/5 bg-[#BBEACB] onClick={handleFlip}  rounded-full h-3">
           <div
@@ -207,7 +207,7 @@ const Flashcard: React.FC<FlashcardProps> = ({ mode, id, isRevision }) => {
 
       }
 
-      <div className="flex  items-center w-[800px] relative pt-28 flex-col  p-4">
+      <div className={`flex items-center w-[800px] relative flex-col p-4 ${!quizMode ? 'pt-28' : 'pt-0'}`}>
         {!quizMode ? (
           <div className={cn("flashcard relative w-full h-[400px] transition-all transform duration-500", flipped && "flipped")}>
             <div className="front  rounded-xl flex flex-col gap-3 items-center justify-between pt-10 pb-4">

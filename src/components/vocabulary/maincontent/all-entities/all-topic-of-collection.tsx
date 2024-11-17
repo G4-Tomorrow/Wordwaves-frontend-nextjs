@@ -12,7 +12,6 @@ import { AuthContext } from "@/context/AuthContext";
 import AddTopicForm from "@/components/vocabulary/maincontent/addform/add-topic-form";
 import AllWordOfTopic from "@/components/vocabulary/maincontent/all-entities/all-word-of-topic";
 import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
 
 interface Topic {
   createdAt: string;
@@ -48,7 +47,6 @@ const AllTopicOfCollection: React.FC<{
   const [showAddTopicModal, setShowAddTopicModal] = useState(false);
 
   const router = useRouter();
-  const { toast } = useToast();
 
   // Fetch topics when selectedCollection changes
   useEffect(() => {

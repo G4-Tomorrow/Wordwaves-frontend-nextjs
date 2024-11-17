@@ -18,7 +18,11 @@ import {
 } from "@tabler/icons-react";
 import Link from "next/link";
 import Image from "next/image";
-import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
+import {
+  SidebarApp as Sidebar,
+  SidebarBody,
+  SidebarLink,
+} from "@/components/ui/sidebar-app";
 
 export default function SidebarApp() {
   const links = [

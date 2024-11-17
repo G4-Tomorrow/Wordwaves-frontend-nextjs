@@ -1,3 +1,5 @@
+import http from "@/utils/http";
+
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://backend-production-7ea7.up.railway.app/wordwaves";

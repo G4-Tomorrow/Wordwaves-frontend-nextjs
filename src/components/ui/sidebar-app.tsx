@@ -54,7 +54,7 @@ export const SidebarProvider = ({
   );
 };
 
-export const Sidebar = ({
+export const SidebarApp = ({
   children,
   open,
   setOpen,

@@ -3,7 +3,11 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthContextProvider } from "@/context/AuthContext";
+
+import { Poppins } from '@next/font/google';
+
 import { Toaster } from "@/components/ui/toaster";
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -15,7 +19,10 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
-
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400','500','600', '700'], 
+});
 export const metadata: Metadata = {
   title: {
     default: "WordWaves",
@@ -32,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#f4f7fc]`}
+        className={`${geistSans.variable} ${geistMono.variable} ${poppins.className} antialiased `}
       >
         <ThemeProvider
           attribute="class"

@@ -16,6 +16,7 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
   isAdmin: boolean;
+  collectionsData: any[];
   logout: () => void;
 }
 
@@ -37,6 +38,8 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [collectionsData, setCollectionsData] = useState<any[]>([]);
+
   const router = useRouter();
 
   const token =
@@ -103,6 +106,33 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const fetchCollections = async (token: string, userId?: string) => {
+    // Kiểm tra nếu user là admin thì không truyền userId
+    const url = user?.roles.some((role) => role.name === "ADMIN")
+      ? `/collections?pageNumber=1&pageSize=20`
+      : `/collections?pageNumber=1&pageSize=20&userId=${userId}`;
+
+    try {
+      const response = await http.get<{
+        code: number;
+        message: string;
+        result: { data: any[] };
+      }>(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.code === 1000) {
+        setCollectionsData(response.data.result.data);
+      } else {
+        console.error("Error fetching collection data:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching collection data:", error);
+    }
+  };
+
   const isAdmin = user?.roles.some((role) => role.name === "ADMIN") || false;
 
   useEffect(() => {
@@ -110,6 +140,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
     if (token) {
       fetchUserInfo(token);
+      fetchCollections(token, user?.id);
     } else {
       setLoading(false);
     }
@@ -122,7 +153,9 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, isAdmin, logout }}>
+    <AuthContext.Provider
+      value={{ user, loading, error, isAdmin, collectionsData, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

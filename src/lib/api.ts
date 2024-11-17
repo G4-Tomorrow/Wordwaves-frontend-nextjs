@@ -1,6 +1,8 @@
+import http from "@/utils/http";
+
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://backend-production-c2cb.up.railway.app/wordwaves";
+  "http://localhost:8080/wordwaves";
 export interface Phonetic {
   text: string;
   audio: string;
@@ -38,11 +40,11 @@ export interface WordDetailResponse {
 export interface LearningWord {
   level: any;
   learningType:
-    | "SENTENCE_BUILDER"
-    | "MULTIPLE_CHOICE_MEANING"
-    | "MULTIPLE_CHOICE"
-    | "TRUE_FALSE"
-    | "FILL_IN";
+  | "SENTENCE_BUILDER"
+  | "MULTIPLE_CHOICE_MEANING"
+  | "MULTIPLE_CHOICE"
+  | "TRUE_FALSE"
+  | "FILL_IN";
   score: number;
   id: string;
   word: string;
@@ -183,4 +185,33 @@ export const fetchTopicRevisionWords = async (
     throw new Error("Failed to fetch topic revision words");
   }
   return response.json();
+};
+
+export const fetchCollections = async (token: string, userId?: string) => {
+  const url = userId
+    ? `/collections?pageNumber=1&pageSize=20&userId=${userId}`
+    : `/collections?pageNumber=1&pageSize=20`;
+
+  try {
+    const response = await http.get<{
+      code: number;
+      message: string;
+      result: { data: any[] };
+    }>(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Kiểm tra mã trạng thái trả về từ API
+    if (response.data.code === 1000) {
+      return response.data.result.data;
+    } else {
+      console.error("Error fetching collection data:", response.data.message);
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching collection data:", error);
+    return [];
+  }
 };

@@ -136,13 +136,11 @@ const AllTopicOfCollection: React.FC<{
             <IconChevronLeft size={30} />
           </button>
           <div className="flex gap-5 items-center">
-            <Image
+            <img
               src={
                 selectedCollection?.thumbnailName ||
                 "https://voca-land.sgp1.cdn.digitaloceanspaces.com/-1/1653745889658/92e1b62145539c2bdcd28d6b8204d77d54c7cb41269edef6d4b5b98989985091.png"
               }
-              width={100}
-              height={100}
               alt="folder"
               className="w-16 h-16 rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-[5px]"
             />
@@ -170,7 +168,7 @@ const AllTopicOfCollection: React.FC<{
           </div>
 
           {/* Button to open Add Topic Modal */}
-          {isAdmin && (
+          {/* {isAdmin && (
             <div className="absolute top-[50%] right-10 translate-y-[-50%]">
               <Button
                 onClick={handleShowAddTopicModal}
@@ -179,16 +177,18 @@ const AllTopicOfCollection: React.FC<{
                 Thêm chủ đề
               </Button>
             </div>
-          )}
+          )} */}
         </div>
+
         {/* Add Topic Modal */}
-        {isAdmin && selectedCollection && showAddTopicModal && (
+        {/* {isAdmin && selectedCollection && showAddTopicModal && (
           <AddTopicForm
             collectionId={selectedCollection?.id}
             onTopicAdded={handleTopicAdded}
             onCloseAddTopicModal={handleShowAddTopicModal}
           />
-        )}
+        )} */}
+
         {/* Content Section */}
         {loading ? (
           <div className="grid lg:grid-cols-5 gap-3 px-16 py-4">
@@ -253,15 +253,13 @@ const AllTopicOfCollection: React.FC<{
                   <div className="flex items-center text-[#0088E6] gap-1">
                     <IconCircleCheckFilled width={19} height={19} />
                     <p className="mt-0.5">
-                      {selectedCollection?.numOfLearnedWord || 0}/
-                      {selectedCollection?.numOfTotalWords || 0}
+                      {topic?.numOfLearnedWord || 0}/
+                      {topic?.numOfTotalWords || 0}
                     </p>
                   </div>
                   <div className="flex items-center text-primary gap-1">
                     <IconClockFilled width={19} height={19} />
-                    <p className="mt-0.5">
-                      {selectedCollection?.numOfLearningWord || 0}
-                    </p>
+                    <p className="mt-0.5">{topic?.numOfLearningWord || 0}</p>
                   </div>
                 </div>
               </button>

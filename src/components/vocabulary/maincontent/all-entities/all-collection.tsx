@@ -116,7 +116,7 @@ const AllCollection: React.FC<AllCategoriesProps> = ({
           trạng thái học tương ứng.
         </p>
 
-        {isAdmin && (
+        {/* {isAdmin && (
           <div className="absolute top-[50%] right-10 translate-y-[-50%]">
             <Button
               onClick={handleShowAddCollectionModal}
@@ -125,15 +125,15 @@ const AllCollection: React.FC<AllCategoriesProps> = ({
               Thêm bộ sưu tập
             </Button>
           </div>
-        )}
+        )} */}
       </div>
 
-      {isAdmin && showAddCollectionModal && (
+      {/* {isAdmin && showAddCollectionModal && (
         <AddCollectionForm
           onCollectionAdded={handleCollectionAdded}
           onCloseAddCollectionModal={handleShowAddCollectionModal}
         />
-      )}
+      )} */}
 
       <div className="px-16 py-6">
         {groupedVocabularyData &&

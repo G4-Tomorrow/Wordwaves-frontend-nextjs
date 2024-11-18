@@ -132,7 +132,7 @@ const AllWordOfTopic: React.FC<{
           <div className="flex gap-5 items-center">
             <Image
               src={
-                selectedTopic.thumbnail ||
+                selectedTopic.thumbnailName ||
                 "https://voca-land.sgp1.cdn.digitaloceanspaces.com/-1/1653745889658/92e1b62145539c2bdcd28d6b8204d77d54c7cb41269edef6d4b5b98989985091.png"
               }
               width={100}
@@ -163,7 +163,7 @@ const AllWordOfTopic: React.FC<{
             </div>
           </div>
           {/* Button to open Add Word Modal */}
-          {isAdmin && (
+          {/* {isAdmin && (
             <div className="absolute top-[50%] right-10 translate-y-[-50%]">
               <Button
                 onClick={handleShowAddWordModal}
@@ -172,17 +172,17 @@ const AllWordOfTopic: React.FC<{
                 Thêm từ vựng
               </Button>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Add Word Modal */}
-        {isAdmin && selectedTopic && showAddWordModal && (
+        {/* {isAdmin && selectedTopic && showAddWordModal && (
           <AddWordForm
             topicId={selectedTopic.id}
             onWordAdded={handleWordAdded}
             onCloseAddWordModal={handleShowAddWordModal}
           />
-        )}
+        )} */}
 
         {/* Content */}
         {loading ? (

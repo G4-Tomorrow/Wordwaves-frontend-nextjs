@@ -107,10 +107,10 @@ const Flashcard: React.FC<FlashcardProps> = ({ mode, id, isRevision }) => {
         case "Space":
           handleFlip();
           break;
-        case "Escape":
+        case "Enter":
           handleAnswer(true, true);
           break;
-        case "Enter":
+        case "Escape":
           handleAnswer(false);
           break;
       }

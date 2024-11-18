@@ -1,0 +1,49 @@
+@keyframes pulse-slow {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes text-gradient {
+  0%,
+  100% {
+    background-position: left;
+  }
+  50% {
+    background-position: right;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 6s infinite;
+}
+
+.animate-wiggle {
+  animation: wiggle 0.5s ease-in-out infinite;
+}
+
+.animate-text-gradient {
+  background: linear-gradient(to right, #8b5cf6, #ec4899, #4f46e5);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: text-gradient 3s ease infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 2s ease-out forwards;
+}

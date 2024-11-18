@@ -1,3 +1,4 @@
+import { PaginationInfo } from "@/app/admin/vocabulary/page";
 import http from "@/utils/http";
 
 const BASE_URL =
@@ -187,31 +188,44 @@ export const fetchTopicRevisionWords = async (
   return response.json();
 };
 
-export const fetchCollections = async (token: string, userId?: string) => {
+export const fetchCollections = async (options: {
+  page: number;
+  size: number;
+  sort?: string;
+  search?: string;
+  token: string;
+  userId?: string;
+}) => {
+  const { page, size, sort, search, token, userId } = options;
+
   const url = userId
-    ? `/collections?pageNumber=1&pageSize=20&userId=${userId}`
-    : `/collections?pageNumber=1&pageSize=20`;
+    ? `/collections?pageNumber=${page}&pageSize=${size}&userId=${userId}&sort=${sort}${search ? `&searchQuery=${encodeURIComponent(search)}` : ''}`
+    : `/collections?pageNumber=${page}&pageSize=${size}&sort=${sort}${search ? `&searchQuery=${encodeURIComponent(search)}` : ''}`;
+
+  // const url = '/collections?pageNumber=1&pageSize=10'
 
   try {
     const response = await http.get<{
       code: number;
       message: string;
-      result: { data: any[] };
+      result: {
+        pagination: PaginationInfo;
+        data: any[];
+      };
     }>(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    // Kiểm tra mã trạng thái trả về từ API
     if (response.data.code === 1000) {
-      return response.data.result.data;
+      return response.data.result;
     } else {
       console.error("Error fetching collection data:", response.data.message);
-      return [];
+      throw new Error(response.data.message);
     }
   } catch (error) {
     console.error("Error fetching collection data:", error);
-    return [];
+    throw error;
   }
 };

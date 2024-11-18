@@ -1,6 +1,13 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useCallback, useContext, useRef } from "react";
+import {
+  useEffect,
+  useState,
+  useCallback,
+  useContext,
+  useRef,
+  useMemo,
+} from "react";
 import { AuthContext } from "@/context/AuthContext";
 import Image from "next/image";
 import {
@@ -41,33 +48,36 @@ const MainContent: React.FC = () => {
   const [showTopicModal, setShowTopicModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const getCollectionData = useCallback(
-    async (token: string, userId?: string) => {
-      setLoading(true);
-      const collections = await fetchCollections(token, userId);
-
-      if (collections.length > 0) {
-        setCollectionData(collections);
-      }
-      setLoading(false);
-    },
-    [setCollectionData]
-  );
-
-  useEffect(() => {
+  const fetchCollectionData = useCallback(async () => {
     if (!user) return;
 
     const token = localStorage.getItem("accessToken");
     if (!token) return;
 
-    if (collectionData.length > 0) {
+    try {
+      setLoading(true);
+      const collections = await fetchCollections({
+        page: 1,
+        size: 40,
+        token,
+        userId: user.roles.some((role) => role.name === "USER") ? user.id : "",
+      });
+
+      setCollectionData(collections.data);
+    } catch (error) {
+      console.error("Error fetching collections:", error);
+    } finally {
       setLoading(false);
-    } else {
-      user.roles.some((role) => role.name === "USER")
-        ? getCollectionData(token, user.id)
-        : getCollectionData(token);
     }
-  }, [user, collectionData, getCollectionData]);
+  }, [user, loading, collectionData, setCollectionData]);
+
+  useEffect(() => {
+    console.log("Component mounted, user:", user);
+    if (user) {
+      console.log("Fetching collections...");
+      fetchCollectionData();
+    }
+  }, [user]);
 
   const handleShowAllCollection = (categoryName?: string) => {
     setShowAllCollection((prev) => !prev);
@@ -120,14 +130,17 @@ const MainContent: React.FC = () => {
     setOpenedFromPinned(false);
   };
 
-  const groupedCollectionData = collectionData.reduce((acc, collection) => {
-    const categoryName = collection.wordCollectionCategory.name;
-    if (!acc[categoryName]) {
-      acc[categoryName] = [];
-    }
-    acc[categoryName].push(collection);
-    return acc;
-  }, {} as { [key: string]: any[] });
+  const groupedCollectionData = useMemo(() => {
+    return collectionData.reduce((acc, collection) => {
+      const categoryName =
+        collection.wordCollectionCategory?.name || "Uncategorized";
+      if (!acc[categoryName]) {
+        acc[categoryName] = [];
+      }
+      acc[categoryName].push(collection);
+      return acc;
+    }, {} as { [key: string]: any[] });
+  }, [collectionData]);
 
   return (
     <div className="w-full mt-10 grid lg:grid-cols-1 lg:gap-5 xl:gap-0 xl:grid-cols-3 xl:justify-items-center overflow-x-hidden">

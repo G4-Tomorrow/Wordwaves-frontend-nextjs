@@ -12,6 +12,7 @@ import { AuthContext } from "@/context/AuthContext";
 import AddTopicForm from "@/components/vocabulary/maincontent/addform/add-topic-form";
 import AllWordOfTopic from "@/components/vocabulary/maincontent/all-entities/all-word-of-topic";
 import { useRouter } from "next/navigation";
+import { IoIosArrowBack } from "react-icons/io";
 
 interface Topic {
   createdAt: string;
@@ -128,12 +129,12 @@ const AllTopicOfCollection: React.FC<{
     >
       <div>
         {/* Header Section */}
-        <div className="relative flex px-2.5 py-3.5 gap-5 bg-primary text-white">
+        <div className="relative flex px-2.5 py-3.5 gap-5 bg-[#149043] text-white">
           <button
             onClick={handleCloseTopicModal}
             className="font-bold hover:text-gray-300"
           >
-            <IconChevronLeft size={30} />
+            <IoIosArrowBack className="text-white" size={30} />
           </button>
           <div className="flex gap-5 items-center">
             <img
@@ -145,7 +146,7 @@ const AllTopicOfCollection: React.FC<{
               className="w-16 h-16 rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-[5px]"
             />
             <div className="w-full flex flex-col gap-2 items-start">
-              <p className="font-semibold ">
+              <p className="text-white text-lg font-medium">
                 {selectedCollection?.name || "Collection Name Unavailable"}
               </p>
               <div className="text-xs text-gray-500 flex gap-2 font-semibold bg-white px-2 py-[5px] rounded-full">

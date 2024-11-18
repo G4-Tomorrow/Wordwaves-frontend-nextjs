@@ -14,6 +14,7 @@ import AddWordForm from "@/components/vocabulary/maincontent/addform/add-word-fo
 import WordDetailModal from "@/components/vocabulary/maincontent/word-management/word-detail";
 import { preschoolAsUnknow } from "../../../../../public/preschool";
 import { useRouter } from "next/navigation";
+import { IoIosArrowBack } from "react-icons/io";
 interface Word {
   id: string;
   name: string;
@@ -122,12 +123,12 @@ const AllWordOfTopic: React.FC<{
     >
       <div className="relative h-screen">
         {/* Header */}
-        <div className="relative flex items-center px-2.5 py-3.5 gap-5 bg-primary text-white shadow-lg">
+        <div className="relative flex items-center px-2.5 py-3.5 gap-5 bg-[#149043] text-white shadow-lg">
           <button
             onClick={onCloseWordModal}
             className="hover:text-gray-300 transition duration-150"
           >
-            <IconChevronLeft size={30} />
+            <IoIosArrowBack className="text-white" size={30} />
           </button>
           <div className="flex gap-5 items-center">
             <Image
@@ -141,7 +142,7 @@ const AllWordOfTopic: React.FC<{
               className="w-16 h-16 rounded-full border-[7.5px] border-[#A5E3BB] bg-white p-[5px]"
             />
             <div className="w-full flex flex-col gap-2 items-start">
-              <p className="font-semibold">
+              <p className="text-white text-lg font-medium">
                 {selectedTopic?.name || "Collection Name Unavailable"}
               </p>
               <div className="text-xs text-gray-500 flex gap-2 font-semibold bg-white px-2 py-[5px] rounded-full">

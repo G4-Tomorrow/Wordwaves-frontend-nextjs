@@ -6,6 +6,7 @@ import { AuthContext } from "@/context/AuthContext";
 import AddCollectionForm from "@/components/vocabulary/maincontent/addform/add-collection-form";
 import VocabularySet from "@/components/vocabulary/maincontent/word-management/vocabulary-set";
 import useScrollToTop from "@/hooks/useScrollToTop";
+import { IoIosArrowBack } from "react-icons/io";
 type AllCategoriesProps = {
   showAllCollection: boolean;
   showTopicModal: boolean;
@@ -100,15 +101,17 @@ const AllCollection: React.FC<AllCategoriesProps> = ({
           : "scale-50 opacity-0 pointer-events-none"
       }`}
     >
-      <div className="flex flex-col bg-primary text-white text-base relative">
+      <div className="flex flex-col bg-[#149043] text-white text-base relative">
         <div className="flex px-5 pt-5 gap-3 items-center">
           <button
             onClick={onShowAllCollection}
             className="font-bold hover:text-gray-300"
           >
-            <IconChevronLeft size={30} />
+            <IoIosArrowBack className="text-white" size={30} />
           </button>
-          <h1 className="font-bold">Bộ từ vựng được biên soạn</h1>
+          <h1 className="text-white text-lg font-medium">
+            Bộ từ vựng được biên soạn
+          </h1>
         </div>
         <p className="p-3 ml-1">
           WordWaves đồng bộ việc học theo "từ", ví dụ khi bạn học từ "land" ở

@@ -5,10 +5,10 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
-import VocabularySet from "@/components/vocabulary/maincontent/vocabulary-set";
+import VocabularySet from "@/components/vocabulary/maincontent/word-management/vocabulary-set";
 
 interface VocabularySetsListProps {
-  onShowAllCollection: () => void;
+  onShowAllCollection: (categoryName: string) => void;
   groupedVocabularyData: { [categoryName: string]: any[] };
   onOpenCollectionDetail: (collection: any) => void;
 }
@@ -25,10 +25,10 @@ const VocabularySetsList: React.FC<VocabularySetsListProps> = ({
         Object.keys(groupedVocabularyData).map((categoryName) => (
           <div
             key={categoryName}
-            className="hover:bg-gray-200 dark:hover:bg-[#222222] hover:cursor-pointer pt-2 pl-6 pb-6"
+            className="hover:bg-gray-200 dark:hover:bg-[#222222] hover:cursor-pointer pt-2 pl-5 pb-6"
             onClick={(e) => {
               e.stopPropagation();
-              onShowAllCollection();
+              onShowAllCollection(categoryName);
             }}
           >
             <div className="pl-4">

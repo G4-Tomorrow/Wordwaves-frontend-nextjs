@@ -21,12 +21,14 @@ import {
   IconLayoutDashboard,
   IconSettings,
   IconUsers,
+  IconVocabulary,
 } from "@tabler/icons-react";
 import { ModeToggle } from "@/components/ui/toogle-mode";
 
 const menuItems = [
   { name: "Dashboard", icon: IconLayoutDashboard, href: "/admin" },
   { name: "Users", icon: IconUsers, href: "/admin/users" },
+  { name: "Vocabulary", icon: IconVocabulary, href: "/admin/vocabulary" },
   { name: "Settings", icon: IconSettings, href: "/admin/settings" },
 ];
 

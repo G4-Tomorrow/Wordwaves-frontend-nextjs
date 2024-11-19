@@ -1,8 +1,9 @@
+import { PaginationInfo } from "@/app/admin/vocabulary/page";
 import http from "@/utils/http";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://backend-production-7ea7.up.railway.app/wordwaves";
+  "http://localhost:8080/wordwaves";
 export interface Phonetic {
   text: string;
   audio: string;
@@ -40,11 +41,11 @@ export interface WordDetailResponse {
 export interface LearningWord {
   level: any;
   learningType:
-    | "SENTENCE_BUILDER"
-    | "MULTIPLE_CHOICE_MEANING"
-    | "MULTIPLE_CHOICE"
-    | "TRUE_FALSE"
-    | "FILL_IN";
+  | "SENTENCE_BUILDER"
+  | "MULTIPLE_CHOICE_MEANING"
+  | "MULTIPLE_CHOICE"
+  | "TRUE_FALSE"
+  | "FILL_IN";
   score: number;
   id: string;
   word: string;
@@ -185,4 +186,46 @@ export const fetchTopicRevisionWords = async (
     throw new Error("Failed to fetch topic revision words");
   }
   return response.json();
+};
+
+export const fetchCollections = async (options: {
+  page: number;
+  size: number;
+  sort?: string;
+  search?: string;
+  token: string;
+  userId?: string;
+}) => {
+  const { page, size, sort, search, token, userId } = options;
+
+  const url = userId
+    ? `/collections?pageNumber=${page}&pageSize=${size}&userId=${userId}&sort=${sort}${search ? `&searchQuery=${encodeURIComponent(search)}` : ''}`
+    : `/collections?pageNumber=${page}&pageSize=${size}&sort=${sort}${search ? `&searchQuery=${encodeURIComponent(search)}` : ''}`;
+
+  // const url = '/collections?pageNumber=1&pageSize=10'
+
+  try {
+    const response = await http.get<{
+      code: number;
+      message: string;
+      result: {
+        pagination: PaginationInfo;
+        data: any[];
+      };
+    }>(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.data.code === 1000) {
+      return response.data.result;
+    } else {
+      console.error("Error fetching collection data:", response.data.message);
+      throw new Error(response.data.message);
+    }
+  } catch (error) {
+    console.error("Error fetching collection data:", error);
+    throw error;
+  }
 };

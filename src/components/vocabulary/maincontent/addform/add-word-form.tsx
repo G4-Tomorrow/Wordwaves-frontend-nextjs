@@ -1,3 +1,4 @@
+import { toast } from "@/hooks/use-toast";
 import http from "@/utils/http";
 import { IconX } from "@tabler/icons-react";
 import { useState } from "react";
@@ -29,7 +30,12 @@ const AddWordForm: React.FC<{
       if (response.data.code === 1000) {
         onWordAdded();
         setWordName("");
-        alert("Thêm từ thành công!");
+        toast({
+          title: "Thành công",
+          description: "Từ đã được thêm thành công!",
+          duration: 3000, // Duration in ms
+          type: "foreground",
+        });
       } else {
         throw new Error(response.data.message);
       }

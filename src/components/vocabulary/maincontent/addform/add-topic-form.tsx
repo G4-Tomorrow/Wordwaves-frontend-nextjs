@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import http from "@/utils/http"; // Ensure `http` module is set up for API calls
+import { toast } from "@/hooks/use-toast";
 
 const AddTopicForm: React.FC<{
   collectionId: string;
@@ -20,15 +21,41 @@ const AddTopicForm: React.FC<{
     e.preventDefault();
     setIsSubmitting(true);
 
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("collectionId", collectionId);
-    if (thumbnail) formData.append("thumbnail", thumbnail);
-
     try {
       const token = localStorage.getItem("accessToken");
 
-      const response = await http.post(`/topics`, formData, {
+      let uploadedFileName = "";
+      if (thumbnail) {
+        const formData = new FormData();
+        formData.append("file", thumbnail);
+
+        // Upload the thumbnail image
+        const fileResponse = await http.post("/files", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        // Check for successful file upload
+        if (fileResponse.data.code === 1000) {
+          uploadedFileName = fileResponse.data.result.fileName;
+        } else {
+          alert(fileResponse.data.message || "Có lỗi xảy ra khi tải ảnh!");
+          setIsSubmitting(false);
+          return;
+        }
+      }
+
+      const linkThumbnail = `https://firebasestorage.googleapis.com/v0/b/wordwaves-40814.appspot.com/o/${uploadedFileName}?alt=media&token=e3149c89-093f-4049-a935-5ad0bd42c2ee`;
+
+      const topicFormData = {
+        name,
+        collectionId,
+        thumbnailName: linkThumbnail || undefined,
+      };
+
+      const response = await http.post(`/topics`, topicFormData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -36,7 +63,12 @@ const AddTopicForm: React.FC<{
       });
 
       if (response.data.code === 1000) {
-        alert("Chủ đề đã được thêm thành công!");
+        toast({
+          title: "Thành công",
+          description: "Chủ đề đã được thêm thành công!",
+          duration: 3000, // Duration in ms
+          type: "foreground",
+        });
         onTopicAdded();
         setName("");
         setThumbnail(null);
@@ -98,7 +130,7 @@ const AddTopicForm: React.FC<{
             htmlFor="thumbnail"
             className="block text-primary dark:text-white"
           >
-            Tải lên Hình Ảnh
+            Ảnh của chủ đề
           </label>
           <input
             type="file"

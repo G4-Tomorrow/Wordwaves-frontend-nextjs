@@ -1,8 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useCallback, useContext } from "react";
+import {
+  useEffect,
+  useState,
+  useCallback,
+  useContext,
+  useRef,
+  useMemo,
+} from "react";
 import { AuthContext } from "@/context/AuthContext";
-import http from "@/utils/http";
 import Image from "next/image";
 import {
   IconBrandYoutubeFilled,
@@ -13,19 +19,28 @@ import {
   IconPlant,
 } from "@tabler/icons-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import VocabularySetsList from "@/components/vocabulary/maincontent/vocabulary-setslist";
-import AllCollection from "@/components/vocabulary/maincontent/all-collection";
-import AllTopicOfCollection from "@/components/vocabulary/maincontent/all-topic-of-collection";
+import VocabularySetsList from "@/components/vocabulary/maincontent/word-management/vocabulary-setslist";
+import AllCollection from "@/components/vocabulary/maincontent/all-entities/all-collection";
+import AllTopicOfCollection from "@/components/vocabulary/maincontent/all-entities/all-topic-of-collection";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import { fetchCollections } from "@/lib/api";
 
 const MainContent: React.FC = () => {
   const [showAllCollection, setShowAllCollection] = useState(false);
-  const [pinnedCollections, setPinnedCollections] = useState<any[]>([]);
+  const [collectionData, setCollectionData] = useLocalStorage<any[]>(
+    "collectionsData",
+    []
+  );
+  const [pinnedCollections, setPinnedCollections] = useLocalStorage<any[]>(
+    "pinnedCollections",
+    []
+  );
   const [isSelectingPinnedCollection, setIsSelectingPinnedCollection] =
     useState(false);
-  const [collectionData, setCollectionData] = useState<any[]>([]);
   const [selectedCollection, setSelectedCollection] = useState<any | null>(
     null
   );
+  const [selectedCategoryName, setSelectedCategoryName] = useState<string>("");
   const [openedFromPinned, setOpenedFromPinned] = useState(false);
   const router = useRouter();
   const authContext = useContext(AuthContext);
@@ -33,58 +48,46 @@ const MainContent: React.FC = () => {
   const [showTopicModal, setShowTopicModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchCollectionData = useCallback(async () => {
+    if (!user) return;
+
     const token = localStorage.getItem("accessToken");
-    if (!token || !user) return;
+    if (!token) return;
 
-    const cachedData = localStorage.getItem("collectionsData");
-    if (cachedData) {
-      setCollectionData(JSON.parse(cachedData));
+    try {
+      setLoading(true);
+      const collections = await fetchCollections({
+        page: 1,
+        size: 40,
+        token,
+        userId: user.roles.some((role) => role.name === "USER") ? user.id : "",
+      });
+
+      setCollectionData(collections.data);
+    } catch (error) {
+      console.error("Error fetching collections:", error);
+    } finally {
       setLoading(false);
-    } else {
-      user.roles.some((role) => role.name === "USER")
-        ? getCollectionData(token, user.id)
-        : getCollectionData(token);
     }
+  }, [user, loading, collectionData, setCollectionData]);
 
-    const cachedPinnedCollections = localStorage.getItem("pinnedCollections");
-    if (cachedPinnedCollections) {
-      setPinnedCollections(JSON.parse(cachedPinnedCollections));
+  useEffect(() => {
+    console.log("Component mounted, user:", user);
+    if (user) {
+      console.log("Fetching collections...");
+      fetchCollectionData();
     }
   }, [user]);
 
-  const getCollectionData = useCallback(
-    async (token: string, userId?: string) => {
-      const url = userId
-        ? `/collections?pageNumber=1&pageSize=20&userId=${userId}`
-        : `/collections?pageNumber=1&pageSize=20`;
-      try {
-        const response = await http.get<{
-          code: number;
-          message: string;
-          result: { data: any[] };
-        }>(url, { headers: { Authorization: `Bearer ${token}` } });
-        if (response.data.code === 1000) {
-          setCollectionData(response.data.result.data);
-          localStorage.setItem(
-            "collectionsData",
-            JSON.stringify(response.data.result.data)
-          );
-        } else {
-          console.error("Error fetching collection data:", response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching collection data:", error);
-      } finally {
-        setLoading(false);
-      }
-    },
-    []
-  );
-
-  const handleShowAllCollection = () => {
+  const handleShowAllCollection = (categoryName?: string) => {
     setShowAllCollection((prev) => !prev);
     setShowTopicModal(false);
+
+    if (categoryName) {
+      setSelectedCategoryName(categoryName);
+    } else {
+      console.log("No category selected");
+    }
   };
 
   const handleOpenCollectionDetail = (collection: any) => {
@@ -111,7 +114,7 @@ const MainContent: React.FC = () => {
       setIsSelectingPinnedCollection(false);
       setShowAllCollection(false);
     } else {
-      handleOpenCollectionDetail(collection); // mở các topic của collection
+      handleOpenCollectionDetail(collection);
       setShowTopicModal(true);
     }
   };
@@ -127,17 +130,20 @@ const MainContent: React.FC = () => {
     setOpenedFromPinned(false);
   };
 
-  const groupedCollectionData = collectionData.reduce((acc, collection) => {
-    const categoryName = collection.wordCollectionCategory.name;
-    if (!acc[categoryName]) {
-      acc[categoryName] = [];
-    }
-    acc[categoryName].push(collection);
-    return acc;
-  }, {} as { [key: string]: any[] });
+  const groupedCollectionData = useMemo(() => {
+    return collectionData.reduce((acc, collection) => {
+      const categoryName =
+        collection.wordCollectionCategory?.name || "Uncategorized";
+      if (!acc[categoryName]) {
+        acc[categoryName] = [];
+      }
+      acc[categoryName].push(collection);
+      return acc;
+    }, {} as { [key: string]: any[] });
+  }, [collectionData]);
 
   return (
-    <div className="w-full mt-10 grid lg:grid-cols-1 lg:gap-5 xl:gap-0 xl:grid-cols-3 xl:justify-items-start overflow-x-hidden">
+    <div className="w-full mt-10 grid lg:grid-cols-1 lg:gap-5 xl:gap-0 xl:grid-cols-3 xl:justify-items-center overflow-x-hidden">
       {/* Left Section */}
       <div className="flex flex-col pt-2 w-full lg:items-center">
         <div className="bg-white px-4 py-5 rounded-2xl mb-5 dark:bg-[#222222]">
@@ -147,10 +153,13 @@ const MainContent: React.FC = () => {
           <div className="grid grid-cols-2 gap-4 w-full mt-4 text-primary ">
             <button
               className="bg-[#f4f7fc] dark:bg-[#222222] px-3 py-2.5 rounded-lg hover:bg-gray-200 focus:outline-none flex flex-col gap-1 items-center shadow"
-              onClick={handleShowAllCollection}
+              onClick={() => handleShowAllCollection()}
             >
               <IconChartDotsFilled />
-              <p>Từ vựng theo Chủ đề</p>
+              <p>
+                Từ vựng theo <br />
+                Chủ đề
+              </p>
             </button>
             <button
               className="bg-[#f4f7fc] dark:bg-[#222222] px-3 py-2.5 rounded-lg hover:bg-gray-200 focus:outline-none flex flex-col gap-1 items-center shadow"
@@ -184,7 +193,7 @@ const MainContent: React.FC = () => {
               >
                 <div className="flex gap-3">
                   <Image
-                    src={collection.thumbnail}
+                    src={collection.thumbnailName || "/defaultCollection.png"}
                     width={100}
                     height={100}
                     alt="collection"
@@ -233,7 +242,7 @@ const MainContent: React.FC = () => {
       </div>
 
       {/* Right Section */}
-      <div className="col-span-2 justify-center lg:pl-0 xl:pl-6 w-full">
+      <div className="col-span-2 justify-center lg:pl-0 xl:pl-5 w-full">
         {loading ? (
           <div className="flex flex-col space-y-3 pt-2">
             <div className="space-y-2">
@@ -264,6 +273,7 @@ const MainContent: React.FC = () => {
         onSelectPinnedCollection={handleSelectPinnedCollection}
         onShowAllCollection={handleShowAllCollection}
         onSetCollectionData={setCollectionData}
+        selectedCategoryName={selectedCategoryName}
       />
 
       {/* Show Topic Modal */}

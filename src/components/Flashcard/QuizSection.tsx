@@ -13,6 +13,14 @@ import TrueFalse from './exercises/TrueFalse';
 import ImageMatch from './exercises/ImageMatch';
 import ContextualUsage from './exercises/ContextualUsage';
 import SynonymAntonym from './exercises/SynonymAntonym';
+import MatchPairs from './exercises/MatchPairs';
+import SyllableCount from './exercises/SyllableCount';
+import AccentComparison from './exercises/AccentComparison';
+import DefinitionMatching from './exercises/DefinitionMatching';
+import ExampleMatching from './exercises/ExampleMatching';
+import PronunciationMatch from './exercises/PronunciationMatch';
+import SpeedTranslation from './exercises/SpeedTranslation';
+import WordCategorization from './exercises/WordCategorization';
 import { fetchWordDetails } from '@/lib/api';
 import "./Congratulations.css";
 
@@ -34,17 +42,40 @@ const mockDefinitions = [
   "Feeling or expressing joy; pleased"
 ];
 
+const mockCategories = [
+  "Category 1",
+  "Category 2",
+  "Category 3",
+  "Category 4",
+  "Category 5"
+];
+
 const exerciseTypes = [
-  'Sentence Builder',
-  'Word Association',
+  // 'Sentence Builder',
+  // 'Word Association',
   'Arrange Words',
-  'Multiple Choice Quiz',
+  // 'Multiple Choice Quiz',
   'Fill in the Blank',
-  'Flashcards',
+  // 'Flashcards',
   'True or False',
   'Image Match',
-  'Contextual Usage',
-  'Synonym Antonym'
+  // 'Contextual Usage',
+  // 'Synonym Antonym',
+  // 'Match Pairs',
+  'Syllable Count',
+  // 'Accent Comparison',
+  // 'Definition Matching',
+  // 'Example Matching',
+  'Pronunciation Match',
+  'Speed Translation', //nay dang bi loi
+  // 'Word Categorization'
+];
+
+// Mock data for examples
+const mockExamples = [
+  "Example sentence 1 using the word.",
+  "Example sentence 2 using the word.",
+  "Example sentence 3 using the word."
 ];
 
 interface QuizSectionProps {
@@ -59,6 +90,7 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [correctCategory, setCorrectCategory] = useState<string>('');
 
   const hasMoreWords = currentWordIndex < unknownWords.length;
 
@@ -112,6 +144,30 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
         break;
       case 'Synonym Antonym':
         isCorrect = answer === true;
+        break;
+      case 'Match Pairs':
+        isCorrect = answer === true;
+        break;
+      case 'Syllable Count':
+        isCorrect = answer === true;
+        break;
+      case 'Accent Comparison':
+        isCorrect = answer === true;
+        break;
+      case 'Definition Matching':
+        isCorrect = answer === true;
+        break;
+      case 'Example Matching':
+        isCorrect = answer === true;
+        break;
+      case 'Pronunciation Match':
+        isCorrect = answer === true;
+        break;
+      case 'Speed Translation':
+        isCorrect = answer === true;
+        break;
+      case 'Word Categorization':
+        isCorrect = answer === correctCategory;
         break;
       default:
         isCorrect = answer.toLowerCase() === wordDetails.name.toLowerCase();
@@ -287,6 +343,80 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
             {...commonProps}
             synonyms={mockSynonyms.slice(0, 5)}
             antonyms={mockAntonyms.slice(0, 5)}
+          />
+        );
+      case 'Match Pairs':
+        return (
+          <MatchPairs
+            {...commonProps}
+            synonyms={mockSynonyms.slice(0, 3)}
+            onSubmit={handleAnswer}
+          />
+        );
+      case 'Syllable Count':
+        return (
+          <SyllableCount
+            {...commonProps}
+            phonetics={wordDetails.phonetics}
+            onSubmit={handleAnswer}
+            showAnswer={showAnswer}
+          />
+        );
+      case 'Accent Comparison':
+        return (
+          <AccentComparison
+            {...commonProps}
+            phonetics={wordDetails.phonetics}
+            onSubmit={handleAnswer}
+            showAnswer={showAnswer}
+          />
+        );
+      case 'Definition Matching':
+        return (
+          <DefinitionMatching
+            {...commonProps}
+            definitions={mockDefinitions}
+            onSubmit={handleAnswer}
+            showAnswer={showAnswer}
+          />
+        );
+      case 'Example Matching':
+        return (
+          <ExampleMatching
+            {...commonProps}
+            examples={mockExamples}
+            onSubmit={handleAnswer}
+            showAnswer={showAnswer}
+          />
+        );
+      case 'Pronunciation Match':
+        return (
+          <PronunciationMatch
+            {...commonProps}
+            phonetics={wordDetails.phonetics}
+            onSubmit={handleAnswer}
+            showAnswer={showAnswer}
+          />
+        );
+      case 'Speed Translation':
+        return (
+          <SpeedTranslation
+            {...commonProps}
+            vietnamese={wordDetails.meanings[0].definitions[0].example}
+            timeLimit={30}
+            onSubmit={handleAnswer}
+            showAnswer={showAnswer}
+          />
+        );
+      case 'Word Categorization':
+        return (
+          <WordCategorization
+            {...commonProps}
+            vietnamese={wordDetails.meanings[0].definitions[0].example}
+            categories={mockCategories}
+            correctCategory={correctCategory}
+            onSubmit={handleAnswer}
+            showAnswer={showAnswer}
           />
         );
       default:

@@ -35,7 +35,7 @@ const WordDetail: React.FC<WordDetailProps> = ({ details, isLoading }) => {
         }
     };
 
-    const toggleSection = (section) => {
+    const toggleSection = (section: 'noun' | 'verb') => {
         setExpandedSections(prev => ({
             ...prev,
             [section]: !prev[section]
@@ -56,7 +56,7 @@ const WordDetail: React.FC<WordDetailProps> = ({ details, isLoading }) => {
                     alt={details.name}
                     className="w-full h-48 object-cover rounded-lg mb-4"
                     onError={(e) => {
-                        e.target.src = "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4";
+                        (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4";
                     }}
                 />
                 <h1 className="text-4xl font-bold text-gray-800 mb-4">{details.name}</h1>
@@ -81,19 +81,19 @@ const WordDetail: React.FC<WordDetailProps> = ({ details, isLoading }) => {
                 {details.meanings?.map((meaning, index) => (
                     <div key={index} className="border-t pt-4">
                         <button
-                            onClick={() => toggleSection(meaning.partOfSpeech)}
+                            onClick={() => toggleSection(meaning.partOfSpeech as 'noun' | 'verb')}
                             className="w-full flex items-center justify-between text-left"
-                            aria-expanded={expandedSections[meaning.partOfSpeech]}
+                            aria-expanded={expandedSections[meaning.partOfSpeech as 'noun' | 'verb']}
                         >
                             <h2 className="text-xl font-semibold text-gray-700 capitalize">{meaning.partOfSpeech}</h2>
-                            {expandedSections[meaning.partOfSpeech] ? (
+                            {expandedSections[meaning.partOfSpeech as 'noun' | 'verb'] ? (
                                 <MdExpandLess className="text-2xl text-gray-500" />
                             ) : (
                                 <MdExpandMore className="text-2xl text-gray-500" />
                             )}
                         </button>
 
-                        {expandedSections[meaning.partOfSpeech] && (
+                        {expandedSections[meaning.partOfSpeech as 'noun' | 'verb'] && (
                             <div className="mt-4 space-y-4">
                                 <div>
                                     <h3 className="font-medium text-gray-700 mb-2">Definitions:</h3>

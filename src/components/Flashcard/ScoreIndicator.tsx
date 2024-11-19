@@ -21,7 +21,7 @@ const petalColors = [
     "from-teal-300 to-blue-300"
 ];
 
-const ScoreIndicator = ({ level = "PROFICIENT" }) => {
+const ScoreIndicator = ({ level = "PROFICIENT" }: { level?: keyof typeof levelMapping }) => {
     const [petalCount, setPetalCount] = useState(1);
 
     useEffect(() => {

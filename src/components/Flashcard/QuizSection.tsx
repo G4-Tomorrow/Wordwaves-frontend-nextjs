@@ -1,28 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Volume2, Brain, Award, Lightbulb, SkipForward } from 'lucide-react';
+import { fetchWordDetails } from '@/lib/api';
 import confetti from 'canvas-confetti';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Award, Brain, Lightbulb, SkipForward } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import "./Congratulations.css";
 import ResultCard from './ResultCard';
-import SentenceBuilder from './exercises/SentenceBuilder';
-import WordAssociation from './exercises/WordAssociation';
-import MultipleChoice from './exercises/MultipleChoice';
 import ArrangeWords from './exercises/ArrangeWords';
 import FillInTheBlank from './exercises/FillInTheBlank';
-import Flashcards from './exercises/Flashcards';
-import TrueFalse from './exercises/TrueFalse';
 import ImageMatch from './exercises/ImageMatch';
-import ContextualUsage from './exercises/ContextualUsage';
-import SynonymAntonym from './exercises/SynonymAntonym';
-import MatchPairs from './exercises/MatchPairs';
-import SyllableCount from './exercises/SyllableCount';
-import AccentComparison from './exercises/AccentComparison';
-import DefinitionMatching from './exercises/DefinitionMatching';
-import ExampleMatching from './exercises/ExampleMatching';
 import PronunciationMatch from './exercises/PronunciationMatch';
 import SpeedTranslation from './exercises/SpeedTranslation';
-import WordCategorization from './exercises/WordCategorization';
-import { fetchWordDetails } from '@/lib/api';
-import "./Congratulations.css";
+import SyllableCount from './exercises/SyllableCount';
+import TrueFalse from './exercises/TrueFalse';
 
 // Mock data for exercises
 const mockSynonyms = [
@@ -118,18 +107,12 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
     let isCorrect = false;
 
     switch (currentExercise) {
-      case 'Sentence Builder':
-        isCorrect = answer.toLowerCase().includes(wordDetails.name.toLowerCase());
-        break;
-      case 'Word Association':
-        isCorrect = answer === true;
-        break;
+
+
       case 'Arrange Words':
         isCorrect = answer.toLowerCase() === wordDetails.name.toLowerCase();
         break;
-      case 'Multiple Choice Quiz':
-        isCorrect = answer === wordDetails.meanings[0].definitions[0].definition;
-        break;
+
       case 'Fill in the Blank':
         isCorrect = answer.toLowerCase() === wordDetails.name.toLowerCase();
         break;
@@ -139,25 +122,12 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
       case 'Image Match':
         isCorrect = answer === true;
         break;
-      case 'Contextual Usage':
-        isCorrect = answer.toLowerCase().includes(wordDetails.name.toLowerCase());
-        break;
-      case 'Synonym Antonym':
-        isCorrect = answer === true;
-        break;
-      case 'Match Pairs':
-        isCorrect = answer === true;
-        break;
+
+
       case 'Syllable Count':
         isCorrect = answer === true;
         break;
-      case 'Accent Comparison':
-        isCorrect = answer === true;
-        break;
-      case 'Definition Matching':
-        isCorrect = answer === true;
-        break;
-      case 'Example Matching':
+
         isCorrect = answer === true;
         break;
       case 'Pronunciation Match':
@@ -166,9 +136,8 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
       case 'Speed Translation':
         isCorrect = answer === true;
         break;
-      case 'Word Categorization':
-        isCorrect = answer === correctCategory;
-        break;
+
+
       default:
         isCorrect = answer.toLowerCase() === wordDetails.name.toLowerCase();
     }
@@ -275,27 +244,12 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
     };
 
     switch (currentExercise) {
-      case 'Sentence Builder':
-        return <SentenceBuilder {...commonProps} />;
-      case 'Word Association':
-        return (
-          <WordAssociation
-            {...commonProps}
-            associations={mockSynonyms.slice(0, 6)}
-          />
-        );
+
+
       case 'Arrange Words':
         return <ArrangeWords {...commonProps} />;
-      case 'Multiple Choice Quiz':
-        return (
-          <MultipleChoice
-            {...commonProps}
-            correctDefinition={wordDetails.meanings[0].definitions[0].definition}
-            wrongDefinitions={mockDefinitions.filter(def =>
-              def !== wordDetails.meanings[0].definitions[0].definition
-            ).slice(0, 3)}
-          />
-        );
+
+
       case 'Fill in the Blank':
         return (
           <FillInTheBlank
@@ -303,15 +257,7 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
             sentence={wordDetails.meanings[0].definitions[0].example || `The ${wordDetails.name} is an important concept.`}
           />
         );
-      case 'Flashcards':
-        return (
-          <Flashcards
-            {...commonProps}
-            phonetic={wordDetails.phonetics?.[0]?.text || ''}
-            audioUrl={wordDetails.phonetics?.[0]?.audio}
-            onNext={handleNextWord}
-          />
-        );
+
       case 'True or False':
         return (
           <TrueFalse
@@ -326,33 +272,8 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
             imageUrl={wordDetails.thumbnailUrl}
           />
         );
-      case 'Contextual Usage':
-        return (
-          <ContextualUsage
-            {...commonProps}
-            examples={[
-              wordDetails.meanings[0].definitions[0].example || `Example using ${wordDetails.name}`,
-              `Another context with ${wordDetails.name}`,
-              `A third example of ${wordDetails.name} usage`
-            ]}
-          />
-        );
-      case 'Synonym Antonym':
-        return (
-          <SynonymAntonym
-            {...commonProps}
-            synonyms={mockSynonyms.slice(0, 5)}
-            antonyms={mockAntonyms.slice(0, 5)}
-          />
-        );
-      case 'Match Pairs':
-        return (
-          <MatchPairs
-            {...commonProps}
-            synonyms={mockSynonyms.slice(0, 3)}
-            onSubmit={handleAnswer}
-          />
-        );
+
+
       case 'Syllable Count':
         return (
           <SyllableCount
@@ -362,33 +283,8 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
             showAnswer={showAnswer}
           />
         );
-      case 'Accent Comparison':
-        return (
-          <AccentComparison
-            {...commonProps}
-            phonetics={wordDetails.phonetics}
-            onSubmit={handleAnswer}
-            showAnswer={showAnswer}
-          />
-        );
-      case 'Definition Matching':
-        return (
-          <DefinitionMatching
-            {...commonProps}
-            definitions={mockDefinitions}
-            onSubmit={handleAnswer}
-            showAnswer={showAnswer}
-          />
-        );
-      case 'Example Matching':
-        return (
-          <ExampleMatching
-            {...commonProps}
-            examples={mockExamples}
-            onSubmit={handleAnswer}
-            showAnswer={showAnswer}
-          />
-        );
+
+
       case 'Pronunciation Match':
         return (
           <PronunciationMatch
@@ -408,17 +304,8 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
             showAnswer={showAnswer}
           />
         );
-      case 'Word Categorization':
-        return (
-          <WordCategorization
-            {...commonProps}
-            vietnamese={wordDetails.meanings[0].definitions[0].example}
-            categories={mockCategories}
-            correctCategory={correctCategory}
-            onSubmit={handleAnswer}
-            showAnswer={showAnswer}
-          />
-        );
+
+
       default:
         return null;
     }

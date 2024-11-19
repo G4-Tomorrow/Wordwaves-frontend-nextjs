@@ -4,14 +4,16 @@ import { FlipHorizontal, Volume2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useFlashcards } from '@/hooks/useFlashcards';
-import QuizSection from './QuizSection';
+
 import ResultCard from './ResultCard';
 import WordDetail from './WordDetail';
 import { motion } from "framer-motion";
 import { FaCheck, FaQuestionCircle } from "react-icons/fa";
 import { fetchWordDetails, type WordDetail as WordDetailType } from '@/lib/api';
 import './styles.css';
-import ScoreIndicator from './ScoreIndiCator';
+
+import QuizSection from './QuizSection';
+import ScoreIndicator from './ScoreIndicator';
 
 
 interface FlashcardProps {
@@ -47,10 +49,10 @@ const Flashcard: React.FC<FlashcardProps> = ({ mode, id, isRevision }) => {
 
 
 
-  const updateCurrentWord = (word: WordDetailType) => {
-    const updatedWords = words.map((w) => (w.id === word.id ? word : w));
-    setUnknownWords(updatedWords);
-  };
+  // const updateCurrentWord = (word: WordDetailType) => {
+  //   const updatedWords = words.map((w) => (w.id === word.id ? word : w));
+  //   setUnknownWords(updatedWords);
+  // };
 
   useEffect(() => {
     if (!isReviewMode && currentWordIndex >= words.length) {
@@ -231,29 +233,9 @@ const Flashcard: React.FC<FlashcardProps> = ({ mode, id, isRevision }) => {
           </div>
         ) : (
           <QuizSection
-            quizType={currentWord.learningType}
+
             unknownWords={unknownWords}
-            multipleChoiceAnswers={multipleChoiceAnswers}
-            multipleChoiceMeanings={[]}
-            selectedAnswer={selectedAnswer}
-            correct={correct}
-            inputAnswer={inputAnswer}
-            trueFalseQuestion={""}
-            sentenceBuilderWords={[]}
-            correctSentence={""}
-            handleMultipleChoiceAnswer={(selected) => {
-              setSelectedAnswer(selected);
-              handleQuizAnswer(selected === currentWord.word);
-            }}
-            handleMultipleChoiceMeaningAnswer={() => { }}
-            handleFillInAnswer={() => { }}
-            handleHint={() => { }}
-            setInputAnswer={setInputAnswer}
-            handleTrueFalseAnswer={() => { }}
-            handleSentenceBuilderSubmit={() => { }}
-            setUnknownWords={setUnknownWords}
-            setCorrect={setCorrect}
-            setCurrentWord={updateCurrentWord}
+
           />
         )}
       </div>

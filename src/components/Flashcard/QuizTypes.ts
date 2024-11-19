@@ -1,5 +1,4 @@
 export const QUIZ_TYPES = {
- 
   FILL_IN: "FILL_IN",
   WORD_SCRAMBLE: "WORD_SCRAMBLE",
   MEMORY_MATCH: "MEMORY_MATCH",
@@ -9,13 +8,14 @@ export const QUIZ_TYPES = {
   SPELLING: "SPELLING",
   WORD_CHAIN: "WORD_CHAIN",
   DEFINITION_MATCH: "DEFINITION_MATCH",
+  MULTIPLE_CHOICE: "MULTIPLE_CHOICE",
 } as const;
 
 export type QuizType = (typeof QUIZ_TYPES)[keyof typeof QUIZ_TYPES];
 
 export const getRandomQuizType = (word: string): QuizType => {
   // Filter suitable quiz types based on word characteristics
-  const availableTypes = [QUIZ_TYPES.MULTIPLE_CHOICE];
+  const availableTypes: QuizType[] = [QUIZ_TYPES.MULTIPLE_CHOICE];
 
   // Add FILL_IN for words longer than 3 characters
   if (word.length > 3) {

@@ -12,7 +12,8 @@ import {
 } from "@/lib/api";
 
 interface UseFlashcardsProps {
-  mode: "collection" | "topic";
+  // mode: "collection" | "topic";
+  mode: any;
   id: string;
   isRevision?: boolean;
 }

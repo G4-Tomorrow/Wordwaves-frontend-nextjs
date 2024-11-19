@@ -35,7 +35,7 @@ const SyllableCount: React.FC<SyllableCountProps> = ({
 
     const handleSelect = (count: number) => {
         setSelectedCount(count);
-        onSubmit(count === correctCount);
+        onSubmit(count);
     };
 
     return (

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import http from '@/utils/http';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 export default function VerifyEmailPage() {
     const [verificationStatus, setVerificationStatus] = useState<'loading' | 'success' | 'error' | 'alreadyVerified'>('loading');
@@ -76,10 +76,12 @@ export default function VerifyEmailPage() {
     };
 
     return (
+        <Suspense>
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
                 {renderContent()}
             </div>
-        </div>
+            </div>
+        </Suspense>
     );
 }

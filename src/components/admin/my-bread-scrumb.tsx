@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 
 import {
@@ -10,7 +11,19 @@ import {
 } from "@/components/ui/breadcrumb";
 import breadCrumbList from "@/lib/breadCrumbList";
 
+import { useEffect, useState } from "react";
+
 export function BreadcrumbWithCustomSeparator() {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null;
+  }
+
   return (
     <Breadcrumb>
       <BreadcrumbList>

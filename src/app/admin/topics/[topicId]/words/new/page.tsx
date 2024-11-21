@@ -4,8 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
 import http from "@/utils/http";
-import { Button } from "@/components/ui/button";
-
+import { Button } from "antd";
 export default function AddWordPage({
   params,
 }: {
@@ -81,9 +80,7 @@ export default function AddWordPage({
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Thêm Từ Mới</h1>
-        <Button variant="outline" onClick={() => router.back()}>
-          Quay lại
-        </Button>
+        <Button onClick={() => router.back()}>Quay lại</Button>
       </div>
 
       <form
@@ -112,8 +109,8 @@ export default function AddWordPage({
         {/* Nút Gửi */}
         <div className="flex justify-end">
           <Button
-            type="submit"
-            className={`px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 ${
+            htmlType="submit"
+            className={`p-4 ${
               isSubmitting ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isSubmitting}

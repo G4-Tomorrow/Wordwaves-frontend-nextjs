@@ -149,15 +149,15 @@ export default function AddTopicPage({
         </div>
 
         <div className="flex justify-end">
-          <button
-            type="submit"
-            className={`px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 ${
+          <Button
+            htmlType="submit"
+            className={`p-4 ${
               isSubmitting ? "opacity-50 cursor-not-allowed" : ""
             }`}
             disabled={isSubmitting}
           >
             {isSubmitting ? "Đang Thêm..." : "Thêm Chủ Đề"}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

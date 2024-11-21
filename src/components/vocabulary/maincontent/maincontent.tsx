@@ -58,7 +58,7 @@ const MainContent: React.FC = () => {
       setLoading(true);
       const collections = await fetchCollections({
         page: 1,
-        size: 40,
+        size: 100,
         token,
         userId: user.roles.some((role) => role.name === "USER") ? user.id : "",
       });
@@ -72,9 +72,7 @@ const MainContent: React.FC = () => {
   }, [user, loading, collectionData, setCollectionData]);
 
   useEffect(() => {
-    console.log("Component mounted, user:", user);
     if (user) {
-      console.log("Fetching collections...");
       fetchCollectionData();
     }
   }, [user]);

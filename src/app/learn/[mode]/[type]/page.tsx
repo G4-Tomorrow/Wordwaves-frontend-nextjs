@@ -13,7 +13,7 @@ export default function LearnModePage() {
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">
             <Flashcard
                 mode={mode}
-                id="135dbb51-1f57-4ba5-add4-5ac85e207f80" 
+                id="3af70570-12d2-4b09-85fc-aebd1e838d67"
                 isRevision={type === 'review'}
             />
         </div>

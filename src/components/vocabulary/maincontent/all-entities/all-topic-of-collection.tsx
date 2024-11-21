@@ -92,31 +92,27 @@ const AllTopicOfCollection: React.FC<{
     setShowWordModal(false);
   };
 
-  const handleTopicAdded = () => {
-    if (selectedCollection) {
-      const token = localStorage.getItem("accessToken");
-      if (token) {
-        fetchCollectionTopics(token, selectedCollection.id);
-      }
-    }
+  // const handleTopicAdded = () => {
+  //   if (selectedCollection) {
+  //     const token = localStorage.getItem("accessToken");
+  //     if (token) {
+  //       fetchCollectionTopics(token, selectedCollection.id);
+  //     }
+  //   }
 
-    setShowAddTopicModal(false);
-  };
+  //   setShowAddTopicModal(false);
+  // };
 
-  const handleShowAddTopicModal = () => {
-    setShowAddTopicModal((prev) => !prev);
-  };
+  // const handleShowAddTopicModal = () => {
+  //   setShowAddTopicModal((prev) => !prev);
+  // };
 
   const handleLearnNewWords = (collectionId: string) => {
-    router.push(
-      `/flashcard?mode=collection&id=${collectionId.toString()}&isRevision=false`
-    );
+    router.push(`/learn/collection/new?id=${collectionId.toString()}`);
   };
 
   const handlePracticeWords = (collectionId: string) => {
-    router.push(
-      `/flashcard?mode=collection&id=${collectionId.toString()}&isRevision=true`
-    );
+    router.push(`/learn/collection/review?id=${collectionId.toString()}`);
   };
 
   return (

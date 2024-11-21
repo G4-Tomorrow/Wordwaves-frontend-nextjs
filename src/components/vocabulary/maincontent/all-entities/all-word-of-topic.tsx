@@ -100,15 +100,11 @@ const AllWordOfTopic: React.FC<{
   };
 
   const handleLearnNewWords = (topicId: string) => {
-    router.push(
-      `/flashcard?mode=collection&id=${topicId.toString()}&isRevision=false`
-    );
+    router.push(`/learn/topic/new?id=${topicId.toString()}`);
   };
 
   const handlePracticeWords = (topicId: string) => {
-    router.push(
-      `/flashcard?mode=collection&id=${topicId.toString()}&isRevision=true`
-    );
+    router.push(`/learn/topic/review?id=${topicId.toString()}`);
   };
 
   if (!showWordModal) return null;

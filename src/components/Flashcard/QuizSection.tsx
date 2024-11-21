@@ -1,10 +1,9 @@
-import { fetchWordDetails } from '@/lib/api';
-import confetti from 'canvas-confetti';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Award, Brain, Lightbulb, SkipForward } from 'lucide-react';
+'use client';
 import React, { useEffect, useState } from 'react';
-import "./Congratulations.css";
-import ResultCard from './ResultCard';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Award, Brain, Lightbulb, SkipForward } from 'lucide-react';
+import confetti from 'canvas-confetti';
+import { fetchWordDetails, updateLearningProgress, type WordDetail as WordDetailType } from '@/lib/api';
 import ArrangeWords from './exercises/ArrangeWords';
 import FillInTheBlank from './exercises/FillInTheBlank';
 import ImageMatch from './exercises/ImageMatch';
@@ -12,76 +11,38 @@ import PronunciationMatch from './exercises/PronunciationMatch';
 import SpeedTranslation from './exercises/SpeedTranslation';
 import SyllableCount from './exercises/SyllableCount';
 import TrueFalse from './exercises/TrueFalse';
-
-// Mock data for exercises
-const mockSynonyms = [
-  "happy", "joyful", "pleased", "delighted", "content",
-  "cheerful", "merry", "jubilant", "thrilled", "elated"
-];
-
-const mockAntonyms = [
-  "sad", "unhappy", "miserable", "depressed", "gloomy",
-  "melancholy", "sorrowful", "downcast", "dejected", "heartbroken"
-];
-
-const mockDefinitions = [
-  "A state of well-being characterized by emotions ranging from contentment to intense joy",
-  "A feeling of great pleasure and contentment",
-  "Experiencing or showing pleasure or contentment",
-  "Feeling or expressing joy; pleased"
-];
-
-const mockCategories = [
-  "Category 1",
-  "Category 2",
-  "Category 3",
-  "Category 4",
-  "Category 5"
-];
+import ResultCard from './ResultCard';
+import ScoreIndicator from './ScoreIndicator';
+import "./styles.css";
 
 const exerciseTypes = [
-  // 'Sentence Builder',
-  // 'Word Association',
   'Arrange Words',
-  // 'Multiple Choice Quiz',
   'Fill in the Blank',
-  // 'Flashcards',
   'True or False',
   'Image Match',
-  // 'Contextual Usage',
-  // 'Synonym Antonym',
-  // 'Match Pairs',
   'Syllable Count',
-  // 'Accent Comparison',
-  // 'Definition Matching',
-  // 'Example Matching',
   'Pronunciation Match',
-  'Speed Translation', //nay dang bi loi
-  // 'Word Categorization'
-];
-
-// Mock data for examples
-const mockExamples = [
-  "Example sentence 1 using the word.",
-  "Example sentence 2 using the word.",
-  "Example sentence 3 using the word."
+  'Speed Translation'
 ];
 
 interface QuizSectionProps {
   unknownWords: { level: string; learningType: string; score: number; id: string; word: string }[];
+  onComplete: () => void;
 }
 
-const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
+const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords, onComplete }) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [correct, setCorrect] = useState<boolean | null>(null);
-  const [wordDetails, setWordDetails] = useState<any>(null);
+  const [wordDetails, setWordDetails] = useState<WordDetailType | null>(null);
   const [currentExercise, setCurrentExercise] = useState<string>('');
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [correctCategory, setCorrectCategory] = useState<string>('');
+  const [pendingUpdates, setPendingUpdates] = useState<{ wordId: string; isCorrect: boolean }[]>([]);
 
   const hasMoreWords = currentWordIndex < unknownWords.length;
+  const progressPercentage = Math.round((currentWordIndex / unknownWords.length) * 100);
+  const currentWord = unknownWords[currentWordIndex] as { level: "NOT_RETAINED" | "BEGINNER" | "LEARNING" | "FAMILIAR" | "LEARNED" | "PROFICIENT" | "MASTER"; id: string; word: string };
 
   useEffect(() => {
     const getWordDetails = async (word: string) => {
@@ -103,46 +64,35 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
     }
   }, [currentWordIndex, unknownWords, hasMoreWords]);
 
-  const handleAnswer = (answer: any) => {
+  const handleAnswer = async (answer: any) => {
     let isCorrect = false;
 
     switch (currentExercise) {
-
-
       case 'Arrange Words':
-        isCorrect = answer.toLowerCase() === wordDetails.name.toLowerCase();
-        break;
-
       case 'Fill in the Blank':
-        isCorrect = answer.toLowerCase() === wordDetails.name.toLowerCase();
+        isCorrect = answer.toLowerCase() === wordDetails?.name.toLowerCase();
         break;
       case 'True or False':
-        isCorrect = answer === true;
-        break;
       case 'Image Match':
-        isCorrect = answer === true;
-        break;
-
-
       case 'Syllable Count':
-        isCorrect = answer === true;
-        break;
-
-        isCorrect = answer === true;
-        break;
       case 'Pronunciation Match':
-        isCorrect = answer === true;
-        break;
       case 'Speed Translation':
         isCorrect = answer === true;
         break;
-
-
       default:
-        isCorrect = answer.toLowerCase() === wordDetails.name.toLowerCase();
+        isCorrect = answer.toLowerCase() === wordDetails?.name.toLowerCase();
     }
 
     setCorrect(isCorrect);
+
+    if (isCorrect) {
+      setPendingUpdates(prev => [...prev, { wordId: currentWord.id, isCorrect: true }]);
+      try {
+        await updateLearningProgress([{ wordId: currentWord.id, isCorrect: true }]);
+      } catch (error) {
+        console.error('Failed to update learning progress:', error);
+      }
+    }
   };
 
   const handleNextWord = () => {
@@ -152,6 +102,7 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
       setCurrentWordIndex((prev) => prev + 1);
     } else {
       setIsCompleted(true);
+      onComplete();
       confetti({
         particleCount: 100,
         spread: 70,
@@ -176,59 +127,45 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ type: "spring", stiffness: 150 }}
-        className="relative flex flex-col items-center justify-center min-h-[500px] p-12 bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 rounded-3xl shadow-2xl shadow-purple-300/50 overflow-hidden"
+        className="relative flex flex-col items-center justify-center min-h-[500px] p-12 bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 rounded-3xl shadow-2xl overflow-hidden"
       >
-        {/* Hiệu ứng ánh sáng di chuyển */}
-        <div className="absolute -top-10 -left-10 w-80 h-80 bg-gradient-to-r from-pink-400 to-purple-500 opacity-20 blur-3xl animate-pulse-slow rounded-full"></div>
-        <div className="absolute -bottom-20 right-0 w-96 h-96 bg-gradient-to-t from-indigo-400 to-purple-600 opacity-30 blur-3xl animate-pulse-slow rounded-full"></div>
-
-        {/* Icon với hiệu ứng xoay */}
         <motion.div
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
           className="relative mb-8"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 to-pink-500 blur-lg opacity-40 rounded-full animate-pulse"></div>
           <Award className="w-28 h-28 text-indigo-600 relative animate-bounce" />
         </motion.div>
 
-        {/* Tiêu đề chúc mừng với hiệu ứng */}
         <motion.h2
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.6, type: "spring", stiffness: 80 }}
-          className="text-5xl font-extrabold text-gray-900 mb-6 tracking-wide animate-text-gradient"
+          transition={{ delay: 0.6 }}
+          className="text-5xl font-extrabold text-gray-900 mb-6"
         >
-          Chúc mừng bạn! 🎉
+          Congratulations! 🎉
         </motion.h2>
 
-        {/* Nội dung */}
         <motion.p
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="text-xl text-gray-700 text-center mb-10 animate-fade-in"
+          className="text-xl text-gray-700 text-center mb-10"
         >
-          Bạn đã hoàn thành tất cả các từ cần ôn tập! 🌟
+          You've completed all the review words! 🌟
         </motion.p>
 
-        {/* Nút hành động với hiệu ứng rung nhẹ */}
-        <motion.div
+        <motion.button
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 1 }}
-          className="flex gap-6"
+          onClick={() => window.location.reload()}
+          className="px-8 py-4 bg-gradient-to-br from-purple-600 to-indigo-600 text-white font-semibold rounded-full hover:shadow-lg hover:scale-105 transition-all duration-300"
         >
-          <button
-            onClick={() => window.location.reload()}
-            className="px-8 py-4 bg-gradient-to-br from-purple-600 to-indigo-600 text-white font-semibold rounded-full hover:shadow-lg hover:scale-105 transition-transform duration-300 ease-out animate-wiggle"
-          >
-            Bắt đầu lại phiên mới
-          </button>
-        </motion.div>
+          Start New Session
+        </motion.button>
       </motion.div>
-
     );
   }
 
@@ -237,32 +174,27 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
 
     const commonProps = {
       word: wordDetails.name,
-      definition: wordDetails.meanings[0].definitions[0].definition,
+      definition: wordDetails.meanings[0]?.definitions[0]?.definition,
       onSubmit: handleAnswer,
       showAnswer,
       onShowAnswer: handleShowAnswer
     };
 
     switch (currentExercise) {
-
-
       case 'Arrange Words':
         return <ArrangeWords {...commonProps} />;
-
-
       case 'Fill in the Blank':
         return (
           <FillInTheBlank
             {...commonProps}
-            sentence={wordDetails.meanings[0].definitions[0].example || `The ${wordDetails.name} is an important concept.`}
+            sentence={wordDetails.meanings[0]?.definitions[0]?.example || `The ${wordDetails.name} is an important concept.`}
           />
         );
-
       case 'True or False':
         return (
           <TrueFalse
             {...commonProps}
-            statement={`The word "${wordDetails.name}" means: ${wordDetails.meanings[0].definitions[0].definition}`}
+            statement={`The word "${wordDetails.name}" means: ${wordDetails.meanings[0]?.definitions[0]?.definition}`}
           />
         );
       case 'Image Match':
@@ -272,40 +204,32 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
             imageUrl={wordDetails.thumbnailUrl}
           />
         );
-
-
       case 'Syllable Count':
         return (
           <SyllableCount
             {...commonProps}
             phonetics={wordDetails.phonetics}
-            onSubmit={handleAnswer}
-            showAnswer={showAnswer}
           />
         );
-
-
       case 'Pronunciation Match':
         return (
           <PronunciationMatch
             {...commonProps}
-            phonetics={wordDetails.phonetics}
-            onSubmit={handleAnswer}
-            showAnswer={showAnswer}
+            phonetics={wordDetails.phonetics.map(p => ({
+              text: p.text,
+              audio: p.audio,
+              accent: (p as any).accent || 'default-accent'
+            }))}
           />
         );
       case 'Speed Translation':
         return (
           <SpeedTranslation
             {...commonProps}
-            vietnamese={wordDetails.meanings[0].definitions[0].example}
+            vietnamese={wordDetails.vietnamese || ''}
             timeLimit={30}
-            onSubmit={handleAnswer}
-            showAnswer={showAnswer}
           />
         );
-
-
       default:
         return null;
     }
@@ -315,8 +239,19 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="max-w-2xl mx-auto p-6"
+      className="max-w-2xl flex flex-col gap-20 mx-auto "
     >
+      <div className="  w-full mb-6 bg-[#BBEACB] rounded-full h-3">
+        <div
+          className="bg-green-500 h-3 rounded-full transition-all duration-500 ease-linear"
+          style={{ width: `${progressPercentage}%` }}
+        />
+        <div className="flex justify-between items-center px-3 mt-3">
+          <div className="font-medium text-[1.1rem]">Ôn tập từ vựng</div>
+          <ScoreIndicator level={currentWord.level} />
+        </div>
+      </div>
+
       <div className="bg-white rounded-2xl shadow-xl p-8 border border-indigo-100">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
@@ -327,15 +262,11 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
             <span className="text-sm font-medium text-indigo-600">
               {currentWordIndex + 1}/{unknownWords.length}
             </span>
-            <motion.div
-              className="w-32 h-2 bg-indigo-100 rounded-full overflow-hidden"
-            >
+            <motion.div className="w-32 h-2 bg-indigo-100 rounded-full overflow-hidden">
               <motion.div
                 className="h-full bg-indigo-500"
                 initial={{ width: '0%' }}
-                animate={{
-                  width: `${((currentWordIndex + 1) / unknownWords.length) * 100}%`,
-                }}
+                animate={{ width: `${((currentWordIndex + 1) / unknownWords.length) * 100}%` }}
                 transition={{ duration: 0.5 }}
               />
             </motion.div>
@@ -376,7 +307,7 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords }) => {
 
             {renderExercise()}
 
-            {correct !== null && (
+            {correct !== null && wordDetails && (
               <ResultCard
                 correct={correct}
                 goToNextQuizWord={handleNextWord}

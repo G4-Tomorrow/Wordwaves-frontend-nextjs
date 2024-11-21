@@ -3,7 +3,7 @@ import http from "@/utils/http";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:8080/wordwaves";
+  "https://backend-production-7ea7.up.railway.app/wordwaves";
 export interface Phonetic {
   text: string;
   audio: string;
@@ -125,25 +125,6 @@ export const fetchTopicReviewWords = async (
   }
   return response.json();
 };
-
-export const updateLearningProgress = async (
-  updates: WordUpdate[]
-): Promise<void> => {
-  const accessToken = localStorage.getItem("accessToken");
-
-  const response = await fetch(`${BASE_URL}/learning`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
-    body: JSON.stringify(updates),
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to update learning progress");
-  }
-};
 export const fetchCollectionRevisionWords = async (
   collectionId: string,
   numOfWords: number = 5
@@ -187,6 +168,25 @@ export const fetchTopicRevisionWords = async (
   }
   return response.json();
 };
+export const updateLearningProgress = async (
+  updates: WordUpdate[]
+): Promise<void> => {
+  const accessToken = localStorage.getItem("accessToken");
+
+  const response = await fetch(`${BASE_URL}/learning`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(updates),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update learning progress");
+  }
+};
+
 
 export const fetchCollections = async (options: {
   page: number;

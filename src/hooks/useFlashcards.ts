@@ -1,129 +1,109 @@
 "use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   fetchCollectionWords,
   fetchTopicReviewWords,
-  updateLearningProgress,
-  LearningWord,
-  WordUpdate,
   fetchCollectionRevisionWords,
   fetchTopicRevisionWords,
+  updateLearningProgress,
+  type LearningWord,
+  type WordUpdate,
 } from "@/lib/api";
 
 interface UseFlashcardsProps {
-  // mode: "collection" | "topic";
-  mode: any;
+  mode: "collection" | "topic" | "revision";
   id: string;
   isRevision?: boolean;
 }
 
-const MAX_SCORE = 5;
+interface Progress {
+  completed: number;
+  total: number;
+}
 
-export const useFlashcards = ({
-  mode,
-  id,
-  isRevision = false,
-}: UseFlashcardsProps) => {
+export const useFlashcards = ({ mode, id, isRevision }: UseFlashcardsProps) => {
   const [words, setWords] = useState<LearningWord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [progress, setProgress] = useState<{
-    total: number;
-    completed: number;
-  }>({ total: 0, completed: 0 });
+  const [progress, setProgress] = useState<Progress>({
+    completed: 0,
+    total: 0,
+  });
   const [pendingUpdates, setPendingUpdates] = useState<WordUpdate[]>([]);
 
-  const fetchWords = async () => {
+  const fetchWords = useCallback(async () => {
     try {
       setLoading(true);
       let response;
 
-      if (isRevision) {
-        response =
-          mode === "collection"
-            ? await fetchCollectionRevisionWords(id)
-            : await fetchTopicRevisionWords(id);
-      } else {
-        response =
-          mode === "collection"
-            ? await fetchCollectionWords(id)
-            : await fetchTopicReviewWords(id);
+      if (mode === "collection") {
+        if (isRevision) {
+          response = await fetchCollectionRevisionWords(id);
+        } else {
+          response = await fetchCollectionWords(id);
+        }
+      } else if (mode === "topic") {
+        if (isRevision) {
+          response = await fetchTopicRevisionWords(id);
+        } else {
+          response = await fetchTopicReviewWords(id);
+        }
       }
 
-      setWords(response.result.words);
-      setProgress({
-        total: response.result.numOfWords,
-        completed: 0,
-      });
+      if (response) {
+        setWords(response.result.words);
+        setProgress({
+          completed: 0,
+          total: response.result.words.length,
+        });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch words");
     } finally {
       setLoading(false);
     }
-  };
+  }, [mode, id, isRevision]);
 
   useEffect(() => {
     fetchWords();
-  }, [mode, id, isRevision]);
+  }, [fetchWords]);
 
-  const markWordAsLearned = async (
-    wordId: string,
-    isCorrect: boolean,
-    isAlreadyKnow: boolean = false
-  ) => {
-    try {
-      setPendingUpdates((prev) => [
-        ...prev,
-        { wordId, isCorrect, isAlreadyKnow },
-      ]);
-
-      setWords((prev) =>
-        prev.map((word) => {
-          if (word.id === wordId) {
-            return {
-              ...word,
-              score: isAlreadyKnow
-                ? MAX_SCORE
-                : isCorrect
-                ? Math.min(word.score + 1, MAX_SCORE)
-                : word.score,
-              isAlreadyKnow,
-            };
-          }
-          return word;
-        })
-      );
+  const markWordAsLearned = useCallback(
+    async (
+      wordId: string,
+      isCorrect: boolean,
+      isAlreadyKnow: boolean = false
+    ) => {
+      setPendingUpdates((prev) => [...prev, { wordId, isCorrect }]);
 
       setProgress((prev) => ({
         ...prev,
         completed: prev.completed + 1,
       }));
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to update progress"
-      );
-    }
-  };
+    },
+    []
+  );
 
-  const submitPendingUpdates = async () => {
+  const submitPendingUpdates = useCallback(async () => {
     if (pendingUpdates.length === 0) return;
 
     try {
       await updateLearningProgress(pendingUpdates);
       setPendingUpdates([]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to submit updates");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to update learning progress"
+      );
     }
-  };
+  }, [pendingUpdates]);
 
   useEffect(() => {
     return () => {
-      if (pendingUpdates.length > 0) {
-        submitPendingUpdates();
-      }
+      submitPendingUpdates();
     };
-  }, [pendingUpdates]);
+  }, [submitPendingUpdates]);
 
   return {
     words,
@@ -132,6 +112,5 @@ export const useFlashcards = ({
     progress,
     markWordAsLearned,
     submitPendingUpdates,
-    pendingUpdates,
   };
 };

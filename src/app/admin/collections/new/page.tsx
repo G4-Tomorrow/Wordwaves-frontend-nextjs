@@ -142,7 +142,9 @@ export default function AddVocabularyCollection() {
 
       {/* Save Button */}
       <div className="flex justify-end">
-        <Button onClick={handleSave}>Lưu bộ từ vựng</Button>
+        <Button className="p-4" onClick={handleSave}>
+          Lưu bộ từ vựng
+        </Button>
       </div>
     </div>
   );

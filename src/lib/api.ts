@@ -192,17 +192,15 @@ export const fetchCollections = async (options: {
   page: number;
   size: number;
   sort?: string;
+  sortDirection?: string;
   search?: string;
   token: string;
   userId?: string;
 }) => {
-  const { page, size, sort, search, token, userId } = options;
+  const { page, size, sort, sortDirection, search, token, userId } = options;
 
-  const url = userId
-    ? `/collections?pageNumber=${page}&pageSize=${size}&userId=${userId}&sort=${sort}${search ? `&searchQuery=${encodeURIComponent(search)}` : ''}`
-    : `/collections?pageNumber=${page}&pageSize=${size}&sort=${sort}${search ? `&searchQuery=${encodeURIComponent(search)}` : ''}`;
-
-  // const url = '/collections?pageNumber=1&pageSize=10'
+  const url = `/collections?sort=${sort}&sortDirection=${sortDirection}&pageSize=${size}&pageNumber=${page}${search ? `&searchQuery=${encodeURIComponent(search)}` : ""
+    }${userId ? `&userId=${userId}` : ""}`;
 
   try {
     const response = await http.get<{

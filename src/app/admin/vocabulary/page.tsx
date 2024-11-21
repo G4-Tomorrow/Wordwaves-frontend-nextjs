@@ -82,7 +82,7 @@ export default function VocabularyAdmin() {
 
   const [pagination, setPagination] = useState<PaginationInfo>({
     pageNumber: 1,
-    pageSize: 10,
+    pageSize: 5,
     totalPages: 0,
     totalElements: 0,
   });
@@ -102,7 +102,8 @@ export default function VocabularyAdmin() {
         const response = await fetchCollections({
           page: pagination.pageNumber,
           size: pagination.pageSize,
-          sort: `${queryOptions.sortBy},${queryOptions.sortDirection}`,
+          sort: `${queryOptions.sortBy}`,
+          sortDirection: `${queryOptions.sortDirection}`,
           search: queryOptions.searchQuery,
           token: token || "",
         });

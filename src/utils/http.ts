@@ -28,7 +28,7 @@ class Http {
   }
 
   private handleError = async (error: AxiosError) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 4012) {
       Modal.warning({
         title: "Phiên đăng nhập hết hạn",
         content: "Vui lòng đăng nhập lại để tiếp tục.",

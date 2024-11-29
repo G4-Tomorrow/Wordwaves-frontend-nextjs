@@ -1,9 +1,7 @@
 import { PaginationInfo } from "@/app/admin/vocabulary/page";
 import http from "@/utils/http";
 
-const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://backend-production-7ea7.up.railway.app/wordwaves";
+const BASE_URL = "https://backend-production-7ea7.up.railway.app/wordwaves";
 export interface Phonetic {
   text: string;
   audio: string;
@@ -41,11 +39,11 @@ export interface WordDetailResponse {
 export interface LearningWord {
   level: any;
   learningType:
-  | "SENTENCE_BUILDER"
-  | "MULTIPLE_CHOICE_MEANING"
-  | "MULTIPLE_CHOICE"
-  | "TRUE_FALSE"
-  | "FILL_IN";
+    | "SENTENCE_BUILDER"
+    | "MULTIPLE_CHOICE_MEANING"
+    | "MULTIPLE_CHOICE"
+    | "TRUE_FALSE"
+    | "FILL_IN";
   score: number;
   id: string;
   word: string;
@@ -187,7 +185,6 @@ export const updateLearningProgress = async (
   }
 };
 
-
 export const fetchCollections = async (options: {
   page: number;
   size: number;
@@ -199,8 +196,9 @@ export const fetchCollections = async (options: {
 }) => {
   const { page, size, sort, sortDirection, search, token, userId } = options;
 
-  const url = `/collections?sort=${sort}&sortDirection=${sortDirection}&pageSize=${size}&pageNumber=${page}${search ? `&searchQuery=${encodeURIComponent(search)}` : ""
-    }${userId ? `&userId=${userId}` : ""}`;
+  const url = `/collections?sort=${sort}&sortDirection=${sortDirection}&pageSize=${size}&pageNumber=${page}${
+    search ? `&searchQuery=${encodeURIComponent(search)}` : ""
+  }${userId ? `&userId=${userId}` : ""}`;
 
   try {
     const response = await http.get<{

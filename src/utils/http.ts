@@ -13,8 +13,8 @@ class Http {
     this.instance = axios.create({
       baseURL:
         process.env.NEXT_PUBLIC_API_URL ||
-        // "https://backend-production-7ea7.up.railway.app/wordwaves",
-        "http://localhost:8080/wordwaves",
+        "https://backend-production-7ea7.up.railway.app/wordwaves",
+        // "http://localhost:8080/wordwaves",
       timeout: 10000000,
       headers: {
         "Content-Type": "application/json",
@@ -29,7 +29,7 @@ class Http {
   }
 
   private handleError = async (error: AxiosError) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 4012) {
       Modal.warning({
         title: "Phiên đăng nhập hết hạn",
         content: "Vui lòng đăng nhập lại để tiếp tục.",

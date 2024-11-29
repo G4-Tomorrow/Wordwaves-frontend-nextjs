@@ -1,7 +1,12 @@
 import { PaginationInfo } from "@/app/admin/vocabulary/page";
 import http from "@/utils/http";
 
-const BASE_URL = "https://backend-production-7ea7.up.railway.app/wordwaves";
+
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://backend-production-7ea7.up.railway.app/wordwaves";
+  // "http://localhost:8080/wordwaves"
+
 export interface Phonetic {
   text: string;
   audio: string;
@@ -192,13 +197,14 @@ export const fetchCollections = async (options: {
   sortDirection?: string;
   search?: string;
   token: string;
-  userId?: string;
+  // userId?: string;
 }) => {
-  const { page, size, sort, sortDirection, search, token, userId } = options;
+  const { page, size, sort, sortDirection, search, token } = options;
 
-  const url = `/collections?sort=${sort}&sortDirection=${sortDirection}&pageSize=${size}&pageNumber=${page}${
-    search ? `&searchQuery=${encodeURIComponent(search)}` : ""
-  }${userId ? `&userId=${userId}` : ""}`;
+
+  const url = `/collections?sort=${sort}&sortDirection=${sortDirection}&pageSize=${size}&pageNumber=${page}${search ? `&searchQuery=${encodeURIComponent(search)}` : ""
+    }`;
+
 
   try {
     const response = await http.get<{

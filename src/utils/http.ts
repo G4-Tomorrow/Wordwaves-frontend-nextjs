@@ -14,6 +14,7 @@ class Http {
       baseURL:
         process.env.NEXT_PUBLIC_API_URL ||
         "https://backend-production-7ea7.up.railway.app/wordwaves",
+        // "http://localhost:8080/wordwaves",
       timeout: 10000000,
       headers: {
         "Content-Type": "application/json",
@@ -111,7 +112,7 @@ export class HttpError extends Error {
     payload,
   }: {
     status: number;
-    payload: { message: string; [key: string]: any };
+    payload: { message: string;[key: string]: any };
   }) {
     super(`HTTP Error: ${status}`);
     this.status = status;

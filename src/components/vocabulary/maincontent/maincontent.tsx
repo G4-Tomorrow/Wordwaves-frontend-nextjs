@@ -58,9 +58,9 @@ const MainContent: React.FC = () => {
       setLoading(true);
       const collections = await fetchCollections({
         page: 1,
-        size: 100,
+        size: 20,
         token,
-        userId: user.roles.some((role) => role.name === "USER") ? user.id : "",
+        // userId: user.roles.some((role) => role.name === "USER") ? user.id : "",
       });
 
       setCollectionData(collections.data);

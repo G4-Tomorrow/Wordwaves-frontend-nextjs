@@ -23,8 +23,10 @@ import {
   SidebarBody,
   SidebarLink,
 } from "@/components/ui/sidebar-app";
+import { useAuth } from "@/context/AuthContext";
 
 export default function SidebarApp() {
+  const { user } = useAuth();
   const links = [
     {
       label: "Giao Tiếp",
@@ -74,8 +76,7 @@ export default function SidebarApp() {
                 <div>
                   <div className="">Xin Chào</div>
                   <div className=" font-semibold line-clamp-1">
-                    User8386 fdfdfdfd User8386 fdfdfdfd User8386 fdfdfdfd
-                    User8386 fdfdfdfd
+                    {user?.fullName || 'Chưa Đặt Tên'}
                   </div>
                 </div>
               </div>

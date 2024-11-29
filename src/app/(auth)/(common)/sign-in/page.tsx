@@ -60,7 +60,7 @@ export default function TrangDangNhap() {
 
         localStorage.removeItem("collectionsData");
 
-        router.push("/");
+        router.push("/vocabulary");
       } else if (response.data.code === 1008) {
         setLoginStatus(response.data.message || "Tài khoản không tồn tại.");
       } else {

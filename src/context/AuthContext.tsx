@@ -1,8 +1,9 @@
 "use client";
 
 import http from "@/utils/http";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import React, { createContext, useContext, useEffect, useState } from "react";
+
 export interface User {
   id: string;
   email: string;
@@ -39,7 +40,9 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
+  const pathname = usePathname();
 
+  const protectedRoutes = ["/", "/vocabulary", "/profile", "/dashboard"];
   const token =
     typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
 
@@ -69,13 +72,13 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (response.data.code === 1000) {
         const newAccessToken = response.data.result.accessToken;
-
         localStorage.setItem("accessToken", newAccessToken);
       } else {
         throw new Error("Failed to refresh access token");
       }
     } catch (err) {
       setError("Failed to refresh authentication");
+      logout();
     }
   };
 
@@ -107,8 +110,13 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const isAdmin = user?.roles.some((role) => role.name === "ADMIN") || false;
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
+    // Kiểm tra token trên các route được bảo vệ
+    if (protectedRoutes.includes(pathname) && !token) {
+      router.push("/sign-in");
+    }
+  }, [pathname, token]);
 
+  useEffect(() => {
     if (token) {
       fetchUserInfo(token);
     } else {
@@ -120,7 +128,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
     }, 55 * 60 * 1000);
 
     return () => clearInterval(refreshInterval);
-  }, []);
+  }, [token]);
 
   return (
     <AuthContext.Provider value={{ user, loading, error, isAdmin, logout }}>

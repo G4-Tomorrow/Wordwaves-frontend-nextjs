@@ -69,12 +69,11 @@ export const useFlashcards = ({ mode, id, isRevision }: UseFlashcardsProps) => {
   }, [fetchWords]);
 
   const markWordAsLearned = useCallback(
-    async (
-      wordId: string,
-      isCorrect: boolean,
-      isAlreadyKnow: boolean = false
-    ) => {
-      setPendingUpdates((prev) => [...prev, { wordId, isCorrect }]);
+    async (wordId: string, isCorrect: boolean, isAlreadyKnow: boolean) => {
+      setPendingUpdates((prev) => [
+        ...prev,
+        { wordId, isCorrect, isAlreadyKnow },
+      ]);
 
       setProgress((prev) => ({
         ...prev,
@@ -85,6 +84,7 @@ export const useFlashcards = ({ mode, id, isRevision }: UseFlashcardsProps) => {
   );
 
   const submitPendingUpdates = useCallback(async () => {
+    console.log("goi ham ", pendingUpdates);
     if (pendingUpdates.length === 0) return;
 
     try {
@@ -104,6 +104,11 @@ export const useFlashcards = ({ mode, id, isRevision }: UseFlashcardsProps) => {
       submitPendingUpdates();
     };
   }, [submitPendingUpdates]);
+  useEffect(() => {
+    if (progress.completed === progress.total && pendingUpdates.length > 0) {
+      submitPendingUpdates();
+    }
+  }, [progress, pendingUpdates, submitPendingUpdates]);
 
   return {
     words,

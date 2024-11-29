@@ -110,6 +110,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const isAdmin = user?.roles.some((role) => role.name === "ADMIN") || false;
 
   useEffect(() => {
+
     // Kiểm tra token trên các route được bảo vệ
     if (protectedRoutes.includes(pathname) && !token) {
       router.push("/sign-in");
@@ -117,6 +118,9 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [pathname, token]);
 
   useEffect(() => {
+
+    const token = localStorage.getItem("accessToken");
+
     if (token) {
       fetchUserInfo(token);
     } else {

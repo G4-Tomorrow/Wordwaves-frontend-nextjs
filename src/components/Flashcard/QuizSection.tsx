@@ -64,7 +64,7 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords, onComplete }) =
     }
   }, [currentWordIndex, unknownWords, hasMoreWords]);
 
-  const handleAnswer = async (answer: any) => {
+  const handleAnswer = (answer: any) => {
     let isCorrect = false;
 
     switch (currentExercise) {
@@ -85,15 +85,10 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords, onComplete }) =
 
     setCorrect(isCorrect);
 
-    if (isCorrect) {
-      setPendingUpdates(prev => [...prev, { wordId: currentWord.id, isCorrect: true }]);
-      try {
-        await updateLearningProgress([{ wordId: currentWord.id, isCorrect: true }]);
-      } catch (error) {
-        console.error('Failed to update learning progress:', error);
-      }
-    }
+    // Lưu kết quả vào pendingUpdates
+    setPendingUpdates((prev) => [...prev, { wordId: currentWord.id, isCorrect }]);
   };
+
 
   const handleNextWord = () => {
     setCorrect(null);
@@ -121,53 +116,28 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords, onComplete }) =
     setShowAnswer(true);
   };
 
-  if (isCompleted) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ type: "spring", stiffness: 150 }}
-        className="relative flex flex-col items-center justify-center min-h-[500px] p-12 bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 rounded-3xl shadow-2xl overflow-hidden"
-      >
-        <motion.div
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
-          className="relative mb-8"
-        >
-          <Award className="w-28 h-28 text-indigo-600 relative animate-bounce" />
-        </motion.div>
+  useEffect(() => {
+    console.log(pendingUpdates)
+    if (isCompleted) {
+      const updateProgress = async () => {
+        try {
+          if (pendingUpdates.length > 0) {
+            await updateLearningProgress(pendingUpdates);
+            setPendingUpdates([]);
+          }
+          alert("Hoàn thành!");
+        } catch (error) {
+          console.error(error);
+        }
+      };
 
-        <motion.h2
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="text-5xl font-extrabold text-gray-900 mb-6"
-        >
-          Congratulations! 🎉
-        </motion.h2>
+      updateProgress();
+    }
+  }, [isCompleted, pendingUpdates]);
 
-        <motion.p
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="text-xl text-gray-700 text-center mb-10"
-        >
-          You've completed all the review words! 🌟
-        </motion.p>
 
-        <motion.button
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 1 }}
-          onClick={() => window.location.reload()}
-          className="px-8 py-4 bg-gradient-to-br from-purple-600 to-indigo-600 text-white font-semibold rounded-full hover:shadow-lg hover:scale-105 transition-all duration-300"
-        >
-          Start New Session
-        </motion.button>
-      </motion.div>
-    );
-  }
+
+
 
   const renderExercise = () => {
     if (!wordDetails) return null;
@@ -234,7 +204,7 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords, onComplete }) =
         return null;
     }
   };
-
+  console.log(currentWord)
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -248,7 +218,7 @@ const QuizSection: React.FC<QuizSectionProps> = ({ unknownWords, onComplete }) =
         />
         <div className="flex justify-between items-center px-3 mt-3">
           <div className="font-medium text-[1.1rem]">Ôn tập từ vựng</div>
-          <ScoreIndicator level={currentWord.level} />
+          <ScoreIndicator level={currentWord?.level} />
         </div>
       </div>
 

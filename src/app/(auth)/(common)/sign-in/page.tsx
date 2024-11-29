@@ -55,18 +55,27 @@ export default function TrangDangNhap() {
       if (response.data && response.data.code === 1000) {
         setLoginStatus("Đăng nhập thành công!");
 
-        localStorage.setItem("accessToken", response.data.result.accessToken);
-        localStorage.setItem("user", JSON.stringify(response.data.result.user));
+        const user = response.data.result.user;
+        const accessToken = response.data.result.accessToken;
 
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("user", JSON.stringify(user));
+
+        // Xóa dữ liệu không cần thiết
         localStorage.removeItem("collectionsData");
 
-        router.push("/vocabulary");
+        // Kiểm tra nếu là admin, điều hướng tới trang admin
+        if (user.roles.some((role) => role.name === "ADMIN")) {
+          router.push("/admin");
+        } else {
+          router.push("/vocabulary");
+        }
       } else if (response.data.code === 1008) {
         setLoginStatus(response.data.message || "Tài khoản không tồn tại.");
       } else {
         setLoginStatus(
           response.data.message ||
-            "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin."
+          "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin."
         );
       }
     } catch (error: any) {
@@ -130,11 +139,10 @@ export default function TrangDangNhap() {
 
           {loginStatus && (
             <p
-              className={`text-center ${
-                loginStatus.includes("thành công")
+              className={`text-center ${loginStatus.includes("thành công")
                   ? "text-green-600"
                   : "text-red-600"
-              }`}
+                }`}
             >
               {loginStatus}
             </p>

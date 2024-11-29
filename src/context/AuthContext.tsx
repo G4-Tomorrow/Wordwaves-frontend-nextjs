@@ -108,7 +108,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-
+console.log(token)
     if (token) {
       fetchUserInfo(token);
     } else {
